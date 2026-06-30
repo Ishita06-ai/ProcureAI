@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Users, Package, BarChart3, Sparkles, ShoppingCart,
-  Settings, LifeBuoy, Boxes, ChevronsLeft,
+  Settings, LifeBuoy, Boxes, ChevronsLeft, Bell,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ const NAV = [
   { key: 'inventory', label: 'Inventory', icon: Package },
   { key: 'procurement', label: 'Procurement', icon: ShoppingCart, badge: '42' },
   { key: 'analytics', label: 'Analytics', icon: BarChart3 },
+  { key: 'notifications', label: 'Notifications', icon: Bell },
   { key: 'ai', label: 'AI Assistant', icon: Sparkles, soon: true },
 ];
 

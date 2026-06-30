@@ -81,13 +81,13 @@ function pr({ number, title, description, department, priority, items, status, c
   const chain = buildChain(total);
   for (let i = 0; i < approvedLevels; i++) {
     chain[i].status = 'approved';
-    chain[i].approverName = i % 2 === 0 ? 'Maya Chen' : 'Alex Müller';
+    chain[i].approverName = i % 2 === 0 ? 'Ishita R' : 'Alex Müller';
     chain[i].actedAt = new Date(Date.now() - (approvedLevels - i) * 6 * 3600 * 1000);
     chain[i].comment = i === 0 ? 'Looks good, aligns with Q3 budget.' : 'Approved within finance threshold.';
   }
   if (rejectedAt !== undefined && chain[rejectedAt]) {
     chain[rejectedAt].status = 'rejected';
-    chain[rejectedAt].approverName = 'Maya Chen';
+    chain[rejectedAt].approverName = 'Ishita R';
     chain[rejectedAt].actedAt = new Date();
     chain[rejectedAt].comment = 'Reconsider vendor — sourcing alternatives.';
   }
@@ -185,7 +185,7 @@ async function run() {
       ],
     }),
     pr({ number: 'PR-20567', title: 'New laptops for Q4 hires', description: '12 MacBook Pro 14" for engineering onboarding.',
-      department: 'IT', priority: 'normal', requesterName: 'Maya Chen', neededInDays: 14,
+      department: 'IT', priority: 'normal', requesterName: 'Ishita R', neededInDays: 14,
       status: 'UnderReview', currentLevel: 2, approvedLevels: 1,
       items: [{ name: 'MacBook Pro 14" M4', qty: 12, unit: 'pcs', estimatedUnitPrice: 2399, category: 'Electronics' }],
       quotesForVendors: [
@@ -221,7 +221,7 @@ async function run() {
   console.log(`Purchase requests: ${insertedPRs.length}`);
 
   // POs (include line items with SKUs so GRN can flow into inventory)
-  const owners = ['Maya Chen', 'Sasha Patel', 'Jordan Rivera', 'Lena Okafor', 'Alex Müller'];
+  const owners = ['Ishita R', 'Sasha Patel', 'Jordan Rivera', 'Lena Okafor', 'Alex Müller'];
   const poDefs = [
     { number: 'PO-10293', vendor: 'Apex Components Ltd.', status: 'Approved',   amount: 84200, lines: [{ sku: 'MBP-14-M4', qty: 35, unitPrice: 2050 }] },
     { number: 'PO-10294', vendor: 'Northwind Logistics',  status: 'In Transit', amount: 12450, eta: '2 days', deliveryStatus: 'Shipped', lines: [{ sku: 'PAPER-A4-X', qty: 800, unitPrice: 4.2 }] },
@@ -282,7 +282,7 @@ async function run() {
   }
 
   const admin = await User.create({
-    email: 'admin@procurio.app', name: 'Maya Chen', role: 'admin',
+    email: 'admin@procurio.app', name: 'Ishita R', role: 'admin',
     passwordHash: await hashPassword('procurio123'),
   });
   console.log(`Admin: ${admin.email} / procurio123`);

@@ -9,20 +9,24 @@ import { VendorsPage } from '@/components/app/vendors-page';
 import { ProcurementPage } from '@/components/app/procurement-page';
 import { InventoryPage } from '@/components/app/inventory-page';
 import { AiAssistantPage } from '@/components/app/ai-assistant-page';
+import { AnalyticsPage } from '@/components/app/analytics-page';
+import { NotificationsPage } from '@/components/app/notifications-page';
+import { SettingsPage } from '@/components/app/settings-page';
 import { PlaceholderPage } from '@/components/app/placeholder-page';
 import { LoginPage } from '@/components/app/login-page';
 import { useAuth } from '@/lib/auth-context.jsx';
-import { BarChart3, Settings, LifeBuoy } from 'lucide-react';
+import { LifeBuoy } from 'lucide-react';
 
 const META = {
-  dashboard:   { title: 'Dashboard',     subtitle: 'Overview · Live procurement & inventory intelligence' },
-  vendors:     { title: 'Vendors',       subtitle: 'Supplier network and scorecards' },
-  inventory:   { title: 'Inventory',     subtitle: 'Multi-warehouse stock & valuation' },
-  procurement: { title: 'Procurement',   subtitle: 'PRs, POs and goods received' },
-  analytics:   { title: 'Analytics',     subtitle: 'Spend, savings and supplier KPIs' },
-  ai:          { title: 'AI Assistant',  subtitle: 'Grounded on your live data' },
-  settings:    { title: 'Settings',      subtitle: 'Workspace, integrations and team' },
-  support:     { title: 'Support',       subtitle: 'Documentation and help center' },
+  dashboard:    { title: 'Dashboard',     subtitle: 'Overview · Live procurement & inventory intelligence' },
+  vendors:      { title: 'Vendors',       subtitle: 'Supplier network and scorecards' },
+  inventory:    { title: 'Inventory',     subtitle: 'Multi-warehouse stock & valuation' },
+  procurement:  { title: 'Procurement',   subtitle: 'PRs, POs and goods received' },
+  analytics:    { title: 'Analytics',     subtitle: 'Spend, savings and supplier KPIs' },
+  ai:           { title: 'AI Assistant',  subtitle: 'Grounded on your live data' },
+  notifications:{ title: 'Notifications', subtitle: 'Updates across your workspace' },
+  settings:     { title: 'Settings',      subtitle: 'Workspace, integrations and team' },
+  support:      { title: 'Support',       subtitle: 'Documentation and help center' },
 };
 
 function Shell() {
@@ -38,8 +42,9 @@ function Shell() {
       case 'procurement':return <ProcurementPage />;
       case 'inventory':  return <InventoryPage />;
       case 'ai':         return <AiAssistantPage />;
-      case 'analytics':  return <PlaceholderPage icon={BarChart3} title="Deep analytics" description="Cohort spend, supplier benchmarks and rolling forecasts. Custom dashboards coming soon." />;
-      case 'settings':   return <PlaceholderPage icon={Settings} title="Workspace settings" description="Configure your organization, billing, integrations, members and roles." />;
+      case 'analytics':  return <AnalyticsPage />;
+      case 'notifications': return <NotificationsPage onNavigate={setActive} />;
+      case 'settings':   return <SettingsPage />;
       case 'support':    return <PlaceholderPage icon={LifeBuoy} title="Support center" description="Search the knowledge base or talk to a human within minutes." action="Contact support" />;
       default:           return <DashboardPage />;
     }
@@ -49,7 +54,7 @@ function Shell() {
     <div className="min-h-screen bg-background text-foreground flex">
       <AppSidebar active={active} onNavigate={setActive} collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />
       <div className="flex-1 min-w-0 flex flex-col">
-        <Topbar onOpenPalette={() => setPaletteOpen(true)} title={meta.title} subtitle={meta.subtitle} />
+        <Topbar onOpenPalette={() => setPaletteOpen(true)} title={meta.title} subtitle={meta.subtitle} onNavigate={setActive} />
         <main className="flex-1 min-w-0">{renderPage()}</main>
       </div>
       <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} onNavigate={setActive} />
