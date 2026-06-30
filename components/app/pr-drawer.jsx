@@ -17,7 +17,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import { cn, hasRole } from '@/lib/utils';
 import { api } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context.jsx';
 import { toast } from 'sonner';
@@ -70,7 +70,7 @@ function ApprovalTimeline({ chain, currentLevel, status }) {
   );
 }
 
-function VendorCompare({ pr, vendors, onAddQuote, onSelect, canManageQuotes }) {
+function VendorCompare({ pr, vendors, onAddQuote, onSelect, canEdit }) {
   const [vendorId, setVendorId] = useState('');
   const [amount, setAmount] = useState('');
   const [leadTime, setLeadTime] = useState('');
@@ -120,7 +120,7 @@ function VendorCompare({ pr, vendors, onAddQuote, onSelect, canManageQuotes }) {
                   </div>
                   <div className="text-right">
                     <div className="text-base font-semibold">{fmtCurrency(q.amount)}</div>
-                    {!isSelected && canManageQuotes && (
+                    {!isSelected && canEdit && (
                       <Button size="sm" variant="ghost" className="h-6 text-[11px] mt-0.5" onClick={() => onSelect(q.vendorId, q.amount)}>
                         Select <ArrowRight className="h-3 w-3 ml-1" />
                       </Button>
@@ -138,7 +138,7 @@ function VendorCompare({ pr, vendors, onAddQuote, onSelect, canManageQuotes }) {
         </div>
       )}
 
-      {canManageQuotes && (
+      {canEdit && (
         <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-2">
           <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Add quote</div>
           <div className="grid grid-cols-12 gap-2">
@@ -271,7 +271,7 @@ export function PrDrawer({ prId, open, onOpenChange, vendors, onMutated }) {
   const prio = pr ? (PRIORITY[pr.priority] || PRIORITY.normal) : null;
   const isAdminOrManager = user && ['admin', 'manager'].includes(user.role);
   const canApprove = isAdminOrManager && pr && ['Submitted', 'UnderReview'].includes(pr.status);
-  const canSubmit = pr && pr.status === 'Draft' && user && ['admin', 'manager', 'buyer'].includes(user.role);
+  const canSubmit = pr && pr.status === 'Draft' && hasRole(user, 'admin', 'manager', 'buyer');
   const canConvert = isAdminOrManager && pr && pr.status === 'Approved' && !pr.poId && pr.selectedVendorId;
 
   return (
@@ -360,7 +360,7 @@ export function PrDrawer({ prId, open, onOpenChange, vendors, onMutated }) {
                   <VendorCompare
                     pr={pr}
                     vendors={vendors}
-                    canManageQuotes={user && ['admin', 'manager', 'buyer'].includes(user.role)}
+                    canEdit={hasRole(user, 'admin', 'manager', 'buyer')}
                     onAddQuote={async (data) => { await api.addQuote(pr._id, data); toast.success('Quote added'); await refresh(); }}
                     onSelect={async (vendorId, amount) => { await api.selectVendor(pr._id, vendorId, amount); toast.success('Vendor selected'); await refresh(); }}
                   />

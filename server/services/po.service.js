@@ -2,6 +2,7 @@ import { PurchaseOrder } from '../models/purchaseOrder.model.js';
 import { Vendor } from '../models/vendor.model.js';
 import { notFound, badRequest } from '../utils/apiError.js';
 import { EmailNotify } from './emailNotify.service.js';
+import { User } from '../models/user.model.js';
 
 function nextNumber() { return `PO-${10000 + Math.floor(Math.random() * 90000)}`; }
 
@@ -54,9 +55,19 @@ export const PoService = {
     if (status === 'Delivered') { po.deliveryStatus = 'Received'; po.deliveredAt = new Date(); }
     po.activityLog.push({ at: new Date(), actorId: actor?.id, actorName: actor?.name, action: 'po.statusChange', meta: { from: prev, to: status } });
     await po.save();
-    const obj = po.toObject();
-    await EmailNotify.poStatusChanged(obj, { from: prev, to: status });
-    return obj;
+
+    if (['In Transit', 'Delivered', 'Cancelled'].includes(status) && po.ownerId) {
+      const owner = await User.findById(po.ownerId).select('email').lean();
+      EmailNotify.notifyAndEmail({
+        to: owner?.email, userId: po.ownerId, kind: 'po',
+        severity: status === 'Cancelled' ? 'warning' : 'info',
+        title: `${po.number} is now ${status}`,
+        body: `Purchase order ${po.number} with ${po.vendorName} changed from ${prev} to ${status}.`,
+        link: 'procurement', meta: { poId: po._id, poNumber: po.number, from: prev, to: status },
+      }).catch(() => {});
+    }
+
+    return po.toObject();
   },
 
   async addComment(id, text, actor) {

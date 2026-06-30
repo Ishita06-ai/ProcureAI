@@ -2,7 +2,7 @@
 
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Search, Bell, Sun, Moon, Plus, Command as CmdIcon } from 'lucide-react';
+import { Search, Bell, Sun, Moon, Plus, Command as CmdIcon, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { api } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context.jsx';
 
-export function Topbar({ onOpenPalette, title, subtitle, onNavigate }) {
+export function Topbar({ onOpenPalette, title, subtitle, onNavigate, onOpenMobileNav }) {
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
@@ -39,11 +39,22 @@ export function Topbar({ onOpenPalette, title, subtitle, onNavigate }) {
 
   return (
     <header className="sticky top-0 z-30 h-16 flex items-center gap-4 px-4 lg:px-8 border-b border-border/60 glass">
+      <Button
+        onClick={onOpenMobileNav}
+        size="icon"
+        variant="ghost"
+        className="lg:hidden -ml-1"
+        aria-label="Open navigation menu"
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+
       <div className="min-w-0 flex-1">
         <h1 className="text-sm font-medium truncate">{title}</h1>
         {subtitle && <p className="text-xs text-muted-foreground truncate">{subtitle}</p>}
       </div>
 
+      {/* Search trigger */}
       <button
         onClick={onOpenPalette}
         className={cn(

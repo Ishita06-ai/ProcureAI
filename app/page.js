@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AppSidebar } from '@/components/app/sidebar';
+import { AppSidebar, MobileSidebar } from '@/components/app/sidebar';
 import { Topbar } from '@/components/app/topbar';
 import { CommandPalette } from '@/components/app/command-palette';
 import { DashboardPage } from '@/components/app/dashboard-page';
@@ -33,6 +33,7 @@ function Shell() {
   const [active, setActive] = useState('ai');
   const [collapsed, setCollapsed] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const meta = META[active] ?? META.dashboard;
 
   const renderPage = () => {
@@ -53,8 +54,9 @@ function Shell() {
   return (
     <div className="min-h-screen bg-background text-foreground flex">
       <AppSidebar active={active} onNavigate={setActive} collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />
+      <MobileSidebar open={mobileNavOpen} onOpenChange={setMobileNavOpen} active={active} onNavigate={setActive} />
       <div className="flex-1 min-w-0 flex flex-col">
-        <Topbar onOpenPalette={() => setPaletteOpen(true)} title={meta.title} subtitle={meta.subtitle} onNavigate={setActive} />
+        <Topbar onOpenPalette={() => setPaletteOpen(true)} onOpenMobileNav={() => setMobileNavOpen(true)} title={meta.title} subtitle={meta.subtitle} onNavigate={setActive} />
         <main className="flex-1 min-w-0">{renderPage()}</main>
       </div>
       <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} onNavigate={setActive} />

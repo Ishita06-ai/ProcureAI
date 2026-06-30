@@ -17,9 +17,9 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
-  Search, LayoutGrid, List, RefreshCw, Download, ShoppingCart, ClipboardList, PackageCheck, ChevronDown, MoreHorizontal, Truck, CheckCircle2,
+  Search, LayoutGrid, List, RefreshCw, Download, ShoppingCart, ClipboardList, PackageCheck, ChevronDown, MoreHorizontal, Truck, CheckCircle2, XCircle,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, hasRole } from '@/lib/utils';
 import { api } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context.jsx';
 import { toast } from 'sonner';
@@ -113,7 +113,7 @@ function PurchaseRequestsTab() {
               <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => setRefresh(x => x + 1)}>
                 <RefreshCw className="h-3.5 w-3.5" /> Refresh
               </Button>
-              {user && ['admin', 'manager', 'buyer'].includes(user.role) && <PrCreateDialog onCreated={() => setRefresh(x => x + 1)} />}
+              {hasRole(user, 'admin', 'manager', 'buyer') && <PrCreateDialog onCreated={() => setRefresh(x => x + 1)} />}
             </div>
           </div>
           <div className="mt-3 text-xs text-muted-foreground">{loading ? 'Loading…' : `${totalPRs} requests`}</div>
@@ -162,6 +162,7 @@ function PoTab() {
   }, [q, status, refresh]);
 
   const advance = async (po, newStatus) => {
+    if (newStatus === 'Cancelled' && !window.confirm(`Cancel PO ${po.number}? This can't be undone.`)) return;
     try {
       await api.updatePOStatus(po._id, newStatus);
       toast.success(`PO ${po.number} → ${newStatus}`);
@@ -251,6 +252,14 @@ function PoTab() {
                             {po.status === 'Pending' && <DropdownMenuItem onClick={() => advance(po, 'Approved')}><CheckCircle2 className="h-3.5 w-3.5 mr-2" /> Approve</DropdownMenuItem>}
                             {(po.status === 'Approved' || po.status === 'Pending') && <DropdownMenuItem onClick={() => advance(po, 'In Transit')}><Truck className="h-3.5 w-3.5 mr-2" /> Mark in transit</DropdownMenuItem>}
                             {po.status === 'In Transit' && <DropdownMenuItem onClick={() => advance(po, 'Delivered')}><PackageCheck className="h-3.5 w-3.5 mr-2" /> Mark delivered</DropdownMenuItem>}
+                            {!['Delivered', 'Cancelled'].includes(po.status) && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => advance(po, 'Cancelled')} className="text-destructive focus:text-destructive">
+                                  <XCircle className="h-3.5 w-3.5 mr-2" /> Cancel PO
+                                </DropdownMenuItem>
+                              </>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       )}

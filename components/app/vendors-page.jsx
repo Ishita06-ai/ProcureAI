@@ -11,7 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Search, Filter, Download, MoreHorizontal, Trash2, RefreshCw } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, hasRole } from '@/lib/utils';
 import { api } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context.jsx';
 import { VendorDialog } from '@/components/app/vendor-dialog';
@@ -68,10 +68,8 @@ export function VendorsPage() {
             <RefreshCw className="h-3.5 w-3.5" /> Refresh
           </Button>
           <Button variant="outline" size="sm" className="h-9 gap-1.5"><Download className="h-3.5 w-3.5" /> Export</Button>
-          {user && ['admin', 'manager', 'buyer'].includes(user.role) ? (
-            <VendorDialog onCreated={() => setRefresh((x) => x + 1)} />
-          ) : (
-            <Button size="sm" className="h-9" disabled title={user ? 'Your role cannot add vendors' : 'Sign in to add vendors'}>Add vendor</Button>
+          {hasRole(user, 'admin', 'manager', 'buyer') ? <VendorDialog onCreated={() => setRefresh((x) => x + 1)} /> : (
+            <Button size="sm" className="h-9" disabled title={user ? "Your role can't add vendors" : "Sign in to add vendors"}>Add vendor</Button>
           )}
         </div>
       </div>
@@ -143,18 +141,16 @@ export function VendorsPage() {
                   <TableCell className="text-right font-medium">{v.score}</TableCell>
                   <TableCell className="text-right font-medium">${(v.spend || 0).toLocaleString()}</TableCell>
                   <TableCell className="pr-6">
-                    {user?.role === 'admin' ? (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="h-4 w-4" /></Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => onDelete(v._id, v.name)} className="text-destructive">
-                            <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    ) : null}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="h-4 w-4" /></Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => onDelete(v._id, v.name)} className="text-destructive">
+                          <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}

@@ -2,7 +2,8 @@ import { User } from '../models/user.model.js';
 import { AuditLog } from '../models/auditLog.model.js';
 import { hashPassword } from '../utils/password.js';
 import { conflict, notFound, badRequest } from '../utils/apiError.js';
-import { EmailNotify } from './emailNotify.service.js';
+import { getEmailProvider } from '../providers/email/index.js';
+import { NotificationService } from './notification.service.js';
 
 export const TeamService = {
   async list() {
@@ -17,7 +18,23 @@ export const TeamService = {
       status: 'invited',
       passwordHash: await hashPassword(tempPassword),
     });
-    await EmailNotify.teamInvite({ email, name, role, tempPassword });
+
+    try {
+      const provider = getEmailProvider();
+      await provider.send({
+        to: email,
+        subject: 'You have been invited to ProcureAI',
+        html: `<div style="font-family:sans-serif"><h2>Welcome to ProcureAI, ${name}</h2><p>You've been added as a <b>${role}</b>.</p><p>Temporary password: <code>${tempPassword}</code></p><p>Please log in and change your password.</p></div>`,
+        text: `Welcome to ProcureAI, ${name}. You've been added as a ${role}. Temporary password: ${tempPassword}`,
+        meta: { kind: 'team.invite', userId: user._id },
+      });
+    } catch { /* never block invite flow on email failure */ }
+
+    await NotificationService.emit({
+      kind: 'system', severity: 'info', title: 'New team member invited',
+      body: `${name} (${email}) was invited as ${role}.`, link: 'settings',
+    }).catch(() => {});
+
     return { user: user.toObject(), tempPassword };
   },
   async updateRole(id, role) {

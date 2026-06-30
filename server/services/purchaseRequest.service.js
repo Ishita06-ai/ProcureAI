@@ -3,6 +3,7 @@ import { PurchaseOrder } from '../models/purchaseOrder.model.js';
 import { Vendor } from '../models/vendor.model.js';
 import { notFound, badRequest, forbidden } from '../utils/apiError.js';
 import { EmailNotify } from './emailNotify.service.js';
+import { User } from '../models/user.model.js';
 
 function nextPrNumber() { return `PR-${20000 + Math.floor(Math.random() * 80000)}`; }
 function nextPoNumber() { return `PO-${10000 + Math.floor(Math.random() * 90000)}`; }
@@ -123,9 +124,20 @@ export const PrService = {
     pr.currentLevel = 1;
     logActivity(pr, actor, 'pr.submitted');
     await pr.save();
-    const obj = pr.toObject();
-    await EmailNotify.prSubmitted(obj);
-    return obj;
+
+    const firstStep = pr.approvalChain[0];
+    if (firstStep) {
+      const roles = firstStep.requiredRole === 'admin' ? ['admin'] : ['admin', 'manager'];
+      EmailNotify.emailUsersWithRole(roles, {
+        kind: 'pr',
+        title: `Approval needed: ${pr.number}`,
+        body: `${pr.requesterName} submitted "${pr.title}" for ${pr.estimatedTotal?.toLocaleString()} — awaiting your approval.`,
+        link: 'procurement',
+        meta: { prId: pr._id, prNumber: pr.number },
+      }).catch(() => {});
+    }
+
+    return pr.toObject();
   },
 
   async startReview(id, actor) {
@@ -156,20 +168,35 @@ export const PrService = {
 
     logActivity(pr, actor, 'pr.approvedLevel', { level: step.level });
 
-    let final = false;
     if (pr.currentLevel >= pr.approvalChain.length) {
       pr.status = 'Approved';
-      final = true;
       logActivity(pr, actor, 'pr.approved');
+      await pr.save();
+
+      const requester = pr.requesterId ? await User.findById(pr.requesterId).select('email').lean() : null;
+      EmailNotify.notifyAndEmail({
+        to: requester?.email, userId: pr.requesterId, kind: 'pr', severity: 'success',
+        title: `${pr.number} approved`,
+        body: `Your purchase request "${pr.title}" was fully approved${comment ? `: "${comment}"` : '.'}`,
+        link: 'procurement', meta: { prId: pr._id, prNumber: pr.number },
+      }).catch(() => {});
     } else {
       pr.currentLevel += 1;
       pr.status = 'UnderReview';
+      await pr.save();
+
+      const nextStep = pr.approvalChain[pr.currentLevel - 1];
+      if (nextStep) {
+        const roles = nextStep.requiredRole === 'admin' ? ['admin'] : ['admin', 'manager'];
+        EmailNotify.emailUsersWithRole(roles, {
+          kind: 'pr',
+          title: `Approval needed: ${pr.number}`,
+          body: `"${pr.title}" advanced to the next approval level.`,
+          link: 'procurement', meta: { prId: pr._id, prNumber: pr.number },
+        }).catch(() => {});
+      }
     }
-    await pr.save();
-    const obj = pr.toObject();
-    await EmailNotify.prApproved(obj, { final });
-    if (!final) await EmailNotify.prSubmitted(obj); // nudge the next approval level
-    return obj;
+    return pr.toObject();
   },
 
   async reject(id, { comment }, actor) {
@@ -190,9 +217,16 @@ export const PrService = {
     pr.status = 'Rejected';
     logActivity(pr, actor, 'pr.rejected', { level: step.level, comment });
     await pr.save();
-    const obj = pr.toObject();
-    await EmailNotify.prRejected(obj, { comment });
-    return obj;
+
+    const requester = pr.requesterId ? await User.findById(pr.requesterId).select('email').lean() : null;
+    EmailNotify.notifyAndEmail({
+      to: requester?.email, userId: pr.requesterId, kind: 'pr', severity: 'error',
+      title: `${pr.number} rejected`,
+      body: `Your purchase request "${pr.title}" was rejected${comment ? `: "${comment}"` : '.'}`,
+      link: 'procurement', meta: { prId: pr._id, prNumber: pr.number },
+    }).catch(() => {});
+
+    return pr.toObject();
   },
 
   async addQuote(id, data, actor) {
