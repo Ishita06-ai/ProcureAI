@@ -68,8 +68,10 @@ export function VendorsPage() {
             <RefreshCw className="h-3.5 w-3.5" /> Refresh
           </Button>
           <Button variant="outline" size="sm" className="h-9 gap-1.5"><Download className="h-3.5 w-3.5" /> Export</Button>
-          {user ? <VendorDialog onCreated={() => setRefresh((x) => x + 1)} /> : (
-            <Button size="sm" className="h-9" disabled title="Sign in to add vendors">Add vendor</Button>
+          {user && ['admin', 'manager', 'buyer'].includes(user.role) ? (
+            <VendorDialog onCreated={() => setRefresh((x) => x + 1)} />
+          ) : (
+            <Button size="sm" className="h-9" disabled title={user ? 'Your role cannot add vendors' : 'Sign in to add vendors'}>Add vendor</Button>
           )}
         </div>
       </div>
@@ -141,16 +143,18 @@ export function VendorsPage() {
                   <TableCell className="text-right font-medium">{v.score}</TableCell>
                   <TableCell className="text-right font-medium">${(v.spend || 0).toLocaleString()}</TableCell>
                   <TableCell className="pr-6">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="h-4 w-4" /></Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onDelete(v._id, v.name)} className="text-destructive">
-                          <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {user?.role === 'admin' ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="h-4 w-4" /></Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => onDelete(v._id, v.name)} className="text-destructive">
+                            <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))}

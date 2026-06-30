@@ -70,7 +70,7 @@ function ApprovalTimeline({ chain, currentLevel, status }) {
   );
 }
 
-function VendorCompare({ pr, vendors, onAddQuote, onSelect }) {
+function VendorCompare({ pr, vendors, onAddQuote, onSelect, canManageQuotes }) {
   const [vendorId, setVendorId] = useState('');
   const [amount, setAmount] = useState('');
   const [leadTime, setLeadTime] = useState('');
@@ -120,7 +120,7 @@ function VendorCompare({ pr, vendors, onAddQuote, onSelect }) {
                   </div>
                   <div className="text-right">
                     <div className="text-base font-semibold">{fmtCurrency(q.amount)}</div>
-                    {!isSelected && (
+                    {!isSelected && canManageQuotes && (
                       <Button size="sm" variant="ghost" className="h-6 text-[11px] mt-0.5" onClick={() => onSelect(q.vendorId, q.amount)}>
                         Select <ArrowRight className="h-3 w-3 ml-1" />
                       </Button>
@@ -138,23 +138,25 @@ function VendorCompare({ pr, vendors, onAddQuote, onSelect }) {
         </div>
       )}
 
-      <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-2">
-        <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Add quote</div>
-        <div className="grid grid-cols-12 gap-2">
-          <div className="col-span-5">
-            <Select value={vendorId} onValueChange={setVendorId}>
-              <SelectTrigger className="h-9"><SelectValue placeholder="Vendor" /></SelectTrigger>
-              <SelectContent>
-                {vendors.map(v => <SelectItem key={v._id} value={v._id}>{v.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+      {canManageQuotes && (
+        <div className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-2">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Add quote</div>
+          <div className="grid grid-cols-12 gap-2">
+            <div className="col-span-5">
+              <Select value={vendorId} onValueChange={setVendorId}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="Vendor" /></SelectTrigger>
+                <SelectContent>
+                  {vendors.map(v => <SelectItem key={v._id} value={v._id}>{v.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <Input className="col-span-3 h-9" type="number" min={0} placeholder="Amount $" value={amount} onChange={(e) => setAmount(e.target.value)} />
+            <Input className="col-span-2 h-9" type="number" min={0} placeholder="Lead (d)" value={leadTime} onChange={(e) => setLeadTime(e.target.value)} />
+            <Button onClick={submit} disabled={adding} className="col-span-2 h-9 gap-1.5"><Plus className="h-3.5 w-3.5" /> Add</Button>
           </div>
-          <Input className="col-span-3 h-9" type="number" min={0} placeholder="Amount $" value={amount} onChange={(e) => setAmount(e.target.value)} />
-          <Input className="col-span-2 h-9" type="number" min={0} placeholder="Lead (d)" value={leadTime} onChange={(e) => setLeadTime(e.target.value)} />
-          <Button onClick={submit} disabled={adding} className="col-span-2 h-9 gap-1.5"><Plus className="h-3.5 w-3.5" /> Add</Button>
+          <Input className="h-9" placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
         </div>
-        <Input className="h-9" placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
-      </div>
+      )}
     </div>
   );
 }
@@ -269,7 +271,7 @@ export function PrDrawer({ prId, open, onOpenChange, vendors, onMutated }) {
   const prio = pr ? (PRIORITY[pr.priority] || PRIORITY.normal) : null;
   const isAdminOrManager = user && ['admin', 'manager'].includes(user.role);
   const canApprove = isAdminOrManager && pr && ['Submitted', 'UnderReview'].includes(pr.status);
-  const canSubmit = pr && pr.status === 'Draft' && user;
+  const canSubmit = pr && pr.status === 'Draft' && user && ['admin', 'manager', 'buyer'].includes(user.role);
   const canConvert = isAdminOrManager && pr && pr.status === 'Approved' && !pr.poId && pr.selectedVendorId;
 
   return (
@@ -358,6 +360,7 @@ export function PrDrawer({ prId, open, onOpenChange, vendors, onMutated }) {
                   <VendorCompare
                     pr={pr}
                     vendors={vendors}
+                    canManageQuotes={user && ['admin', 'manager', 'buyer'].includes(user.role)}
                     onAddQuote={async (data) => { await api.addQuote(pr._id, data); toast.success('Quote added'); await refresh(); }}
                     onSelect={async (vendorId, amount) => { await api.selectVendor(pr._id, vendorId, amount); toast.success('Vendor selected'); await refresh(); }}
                   />

@@ -113,7 +113,7 @@ function PurchaseRequestsTab() {
               <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => setRefresh(x => x + 1)}>
                 <RefreshCw className="h-3.5 w-3.5" /> Refresh
               </Button>
-              {user && <PrCreateDialog onCreated={() => setRefresh(x => x + 1)} />}
+              {user && ['admin', 'manager', 'buyer'].includes(user.role) && <PrCreateDialog onCreated={() => setRefresh(x => x + 1)} />}
             </div>
           </div>
           <div className="mt-3 text-xs text-muted-foreground">{loading ? 'Loading…' : `${totalPRs} requests`}</div>

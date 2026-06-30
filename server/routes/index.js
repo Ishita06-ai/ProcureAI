@@ -12,6 +12,7 @@ import analytics from './analytics.routes.js';
 import reports from './report.routes.js';
 import team from './team.routes.js';
 import metrics from './metrics.routes.js';
+import uploads from './upload.routes.js';
 
 const api = new Router();
 
@@ -34,6 +35,7 @@ mount('/notifications', notifications);
 mount('/analytics', analytics);
 mount('/reports', reports);
 mount('/team', team);
+mount('/uploads', uploads);
 // Health & metrics at root level (no prefix)
 for (const layer of metrics.stack) api.stack.push(layer);
 mount('/dashboard', dashboard);

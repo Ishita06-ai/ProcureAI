@@ -2,6 +2,7 @@ import { PurchaseRequest } from '../models/purchaseRequest.model.js';
 import { PurchaseOrder } from '../models/purchaseOrder.model.js';
 import { Vendor } from '../models/vendor.model.js';
 import { notFound, badRequest, forbidden } from '../utils/apiError.js';
+import { EmailNotify } from './emailNotify.service.js';
 
 function nextPrNumber() { return `PR-${20000 + Math.floor(Math.random() * 80000)}`; }
 function nextPoNumber() { return `PO-${10000 + Math.floor(Math.random() * 90000)}`; }
@@ -122,7 +123,9 @@ export const PrService = {
     pr.currentLevel = 1;
     logActivity(pr, actor, 'pr.submitted');
     await pr.save();
-    return pr.toObject();
+    const obj = pr.toObject();
+    await EmailNotify.prSubmitted(obj);
+    return obj;
   },
 
   async startReview(id, actor) {
@@ -153,15 +156,20 @@ export const PrService = {
 
     logActivity(pr, actor, 'pr.approvedLevel', { level: step.level });
 
+    let final = false;
     if (pr.currentLevel >= pr.approvalChain.length) {
       pr.status = 'Approved';
+      final = true;
       logActivity(pr, actor, 'pr.approved');
     } else {
       pr.currentLevel += 1;
       pr.status = 'UnderReview';
     }
     await pr.save();
-    return pr.toObject();
+    const obj = pr.toObject();
+    await EmailNotify.prApproved(obj, { final });
+    if (!final) await EmailNotify.prSubmitted(obj); // nudge the next approval level
+    return obj;
   },
 
   async reject(id, { comment }, actor) {
@@ -182,7 +190,9 @@ export const PrService = {
     pr.status = 'Rejected';
     logActivity(pr, actor, 'pr.rejected', { level: step.level, comment });
     await pr.save();
-    return pr.toObject();
+    const obj = pr.toObject();
+    await EmailNotify.prRejected(obj, { comment });
+    return obj;
   },
 
   async addQuote(id, data, actor) {

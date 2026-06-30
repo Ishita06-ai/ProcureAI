@@ -282,7 +282,7 @@ async function run() {
   }
 
   const admin = await User.create({
-    email: 'admin@procurio.app', name: 'Ishita R', role: 'admin',
+    email: 'admin@procurio.app', name: 'Ishita Rander', role: 'admin',
     passwordHash: await hashPassword('procurio123'),
   });
   console.log(`Admin: ${admin.email} / procurio123`);

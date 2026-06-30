@@ -2,6 +2,7 @@ import { User } from '../models/user.model.js';
 import { AuditLog } from '../models/auditLog.model.js';
 import { hashPassword } from '../utils/password.js';
 import { conflict, notFound, badRequest } from '../utils/apiError.js';
+import { EmailNotify } from './emailNotify.service.js';
 
 export const TeamService = {
   async list() {
@@ -16,6 +17,7 @@ export const TeamService = {
       status: 'invited',
       passwordHash: await hashPassword(tempPassword),
     });
+    await EmailNotify.teamInvite({ email, name, role, tempPassword });
     return { user: user.toObject(), tempPassword };
   },
   async updateRole(id, role) {

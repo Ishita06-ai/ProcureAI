@@ -1,6 +1,7 @@
 import { PurchaseOrder } from '../models/purchaseOrder.model.js';
 import { Vendor } from '../models/vendor.model.js';
 import { notFound, badRequest } from '../utils/apiError.js';
+import { EmailNotify } from './emailNotify.service.js';
 
 function nextNumber() { return `PO-${10000 + Math.floor(Math.random() * 90000)}`; }
 
@@ -53,7 +54,9 @@ export const PoService = {
     if (status === 'Delivered') { po.deliveryStatus = 'Received'; po.deliveredAt = new Date(); }
     po.activityLog.push({ at: new Date(), actorId: actor?.id, actorName: actor?.name, action: 'po.statusChange', meta: { from: prev, to: status } });
     await po.save();
-    return po.toObject();
+    const obj = po.toObject();
+    await EmailNotify.poStatusChanged(obj, { from: prev, to: status });
+    return obj;
   },
 
   async addComment(id, text, actor) {

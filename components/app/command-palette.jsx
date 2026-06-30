@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/command';
 import {
   LayoutDashboard, Users, Package, BarChart3, Sparkles,
-  ShoppingCart, Settings, Plus, FileText, Search,
+  ShoppingCart, Settings, Plus, FileText, Search, Bell,
 } from 'lucide-react';
 
 export function CommandPalette({ open, setOpen, onNavigate }) {
@@ -36,6 +36,7 @@ export function CommandPalette({ open, setOpen, onNavigate }) {
           <CommandItem onSelect={() => go('procurement')}><ShoppingCart className="mr-2 h-4 w-4" />Procurement</CommandItem>
           <CommandItem onSelect={() => go('analytics')}><BarChart3 className="mr-2 h-4 w-4" />Analytics</CommandItem>
           <CommandItem onSelect={() => go('ai')}><Sparkles className="mr-2 h-4 w-4" />AI Assistant</CommandItem>
+          <CommandItem onSelect={() => go('notifications')}><Bell className="mr-2 h-4 w-4" />Notifications</CommandItem>
         </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading="Actions">
