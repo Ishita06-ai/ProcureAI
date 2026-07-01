@@ -8,7 +8,15 @@ const b64urlDecode = (str) => Buffer.from(
   str.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((str.length + 3) % 4), 'base64'
 );
 
-const secret = () => process.env.JWT_SECRET || 'dev-secret-change-me';
+const secret = () => {
+  const s = process.env.JWT_SECRET;
+  if (!s || s === 'dev-secret-change-in-prod-9f8a7e6b5c') {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET env var is not set or is using the default dev value. Set a strong secret before deploying.');
+    }
+  }
+  return s || 'dev-secret-change-me';
+};
 
 export function signJwt(payload, { expiresIn = 60 * 60 * 24 * 7 } = {}) {
   const header = { alg: 'HS256', typ: 'JWT' };

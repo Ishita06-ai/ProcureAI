@@ -27,12 +27,12 @@ import { useAuth } from '@/lib/auth-context.jsx';
 import { toast } from 'sonner';
 
 const ROLE_STYLES = {
-  admin: 'bg-violet-500/10 text-violet-500 border-violet-500/20',
+  admin:   'bg-violet-500/10 text-violet-500 border-violet-500/20',
   manager: 'bg-sky-500/10 text-sky-500 border-sky-500/20',
-  buyer: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-  viewer: 'bg-muted text-muted-foreground border-border',
+  buyer:   'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+  viewer:  'bg-muted text-muted-foreground border-border',
 };
-const initials = (n = '') => n.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase() || '?';
+const initials = (n = '') => n.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
 
 function InviteDialog({ onInvited }) {
   const [open, setOpen] = useState(false);
@@ -62,15 +62,15 @@ function InviteDialog({ onInvited }) {
         <div className="space-y-3 py-2">
           <div className="space-y-1.5">
             <Label htmlFor="inv-name">Name</Label>
-            <Input id="inv-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Jane Doe" />
+            <Input id="inv-name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Jane Doe" />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="inv-email">Email</Label>
-            <Input id="inv-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="jane@company.com" />
+            <Input id="inv-email" type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="jane@company.com" />
           </div>
           <div className="space-y-1.5">
             <Label>Role</Label>
-            <Select value={form.role} onValueChange={(role) => setForm({ ...form, role })}>
+            <Select value={form.role} onValueChange={role => setForm({ ...form, role })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="admin">Admin</SelectItem>
@@ -111,26 +111,17 @@ function TeamTab() {
   }, [refresh]);
 
   const changeRole = async (id, role) => {
-    try {
-      await api.updateMemberRole(id, role);
-      toast.success('Role updated');
-      setRefresh((x) => x + 1);
-    } catch (e) { toast.error(e.message); }
+    try { await api.updateMemberRole(id, role); toast.success('Role updated'); setRefresh(x => x + 1); }
+    catch (e) { toast.error(e.message); }
   };
   const changeStatus = async (id, status) => {
-    try {
-      await api.updateMemberStatus(id, status);
-      toast.success(`Member ${status}`);
-      setRefresh((x) => x + 1);
-    } catch (e) { toast.error(e.message); }
+    try { await api.updateMemberStatus(id, status); toast.success(`Member ${status}`); setRefresh(x => x + 1); }
+    catch (e) { toast.error(e.message); }
   };
   const remove = async (id, name) => {
     if (!confirm(`Remove ${name} from the workspace?`)) return;
-    try {
-      await api.removeTeamMember(id);
-      toast.success('Member removed');
-      setRefresh((x) => x + 1);
-    } catch (e) { toast.error(e.message); }
+    try { await api.removeTeamMember(id); toast.success('Member removed'); setRefresh(x => x + 1); }
+    catch (e) { toast.error(e.message); }
   };
 
   return (
@@ -140,7 +131,7 @@ function TeamTab() {
           <CardTitle className="text-base font-semibold">Team members</CardTitle>
           <p className="text-xs text-muted-foreground">Manage who has access and their permission level.</p>
         </div>
-        {isAdmin && <InviteDialog onInvited={() => setRefresh((x) => x + 1)} />}
+        {isAdmin && <InviteDialog onInvited={() => setRefresh(x => x + 1)} />}
       </CardHeader>
       <CardContent className="p-0">
         <Table>
@@ -161,7 +152,7 @@ function TeamTab() {
                 <TableCell className="pr-6"></TableCell>
               </TableRow>
             ))}
-            {!loading && members.map((m) => (
+            {!loading && members.map(m => (
               <TableRow key={m._id} className="border-border/60 hover:bg-accent/40">
                 <TableCell className="pl-6">
                   <div className="flex items-center gap-3">
@@ -176,9 +167,11 @@ function TeamTab() {
                   <Badge variant="outline" className={ROLE_STYLES[m.role] || ROLE_STYLES.viewer}>{m.role}</Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline" className={m.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : m.status === 'invited' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-muted text-muted-foreground'}>
-                    {m.status}
-                  </Badge>
+                  <Badge variant="outline" className={
+                    m.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                    m.status === 'invited' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                    'bg-muted text-muted-foreground'
+                  }>{m.status}</Badge>
                 </TableCell>
                 <TableCell className="pr-6">
                   {isAdmin && (
@@ -187,7 +180,7 @@ function TeamTab() {
                         <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="h-4 w-4" /></Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        {['admin', 'manager', 'buyer', 'viewer'].filter((r) => r !== m.role).map((r) => (
+                        {['admin','manager','buyer','viewer'].filter(r => r !== m.role).map(r => (
                           <DropdownMenuItem key={r} onClick={() => changeRole(m._id, r)}>Make {r}</DropdownMenuItem>
                         ))}
                         <DropdownMenuItem onClick={() => changeStatus(m._id, m.status === 'disabled' ? 'active' : 'disabled')}>
@@ -243,7 +236,7 @@ function AuditTab() {
       <CardContent className="space-y-2">
         {loading && Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
         {!loading && logs.length === 0 && <p className="text-xs text-muted-foreground py-6 text-center">No audit entries yet.</p>}
-        {!loading && logs.map((l) => (
+        {!loading && logs.map(l => (
           <div key={l._id} className="flex items-center justify-between gap-3 text-xs py-2 border-b border-border/40 last:border-0">
             <span className="font-mono text-foreground/90">{l.action}</span>
             <span className="text-muted-foreground">{l.resource}{l.resourceId ? ` · ${l.resourceId}` : ''}</span>
@@ -257,18 +250,62 @@ function AuditTab() {
 
 function WorkspaceTab() {
   const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+  const [form, setForm] = useState({ name: '', currency: 'USD', timezone: 'UTC' });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    api.getWorkspace()
+      .then(r => setForm({ name: r.data.name || '', currency: r.data.currency || 'USD', timezone: r.data.timezone || 'UTC' }))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await api.updateWorkspace(form);
+      toast.success('Workspace settings saved');
+    } catch (e) { toast.error(e.message); }
+    finally { setSaving(false); }
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card className="border-border/60">
         <CardHeader className="pb-2"><CardTitle className="text-base font-semibold">Workspace</CardTitle></CardHeader>
         <CardContent className="space-y-3">
-          <div className="space-y-1.5"><Label>Workspace name</Label><Input defaultValue="Acme Corp" /></div>
-          <div className="space-y-1.5"><Label>Default currency</Label><Input defaultValue="USD" /></div>
-          <Button size="sm" className="mt-1">Save changes</Button>
+          {loading ? <Skeleton className="h-24 w-full" /> : (
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="ws-name">Workspace name</Label>
+                <Input id="ws-name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} disabled={!isAdmin} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="ws-currency">Default currency</Label>
+                <Input id="ws-currency" value={form.currency} onChange={e => setForm({ ...form, currency: e.target.value })} disabled={!isAdmin} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="ws-tz">Timezone</Label>
+                <Input id="ws-tz" value={form.timezone} onChange={e => setForm({ ...form, timezone: e.target.value })} disabled={!isAdmin} />
+              </div>
+              {isAdmin && (
+                <Button size="sm" className="mt-1" onClick={save} disabled={saving}>
+                  {saving ? 'Saving…' : 'Save changes'}
+                </Button>
+              )}
+              {!isAdmin && <p className="text-xs text-muted-foreground">Only admins can edit workspace settings.</p>}
+            </>
+          )}
         </CardContent>
       </Card>
       <Card className="border-border/60">
-        <CardHeader className="pb-2"><CardTitle className="text-base font-semibold flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Your account</CardTitle></CardHeader>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4" /> Your account
+          </CardTitle>
+        </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-center gap-3">
             <Avatar className="h-12 w-12"><AvatarFallback>{initials(user?.name)}</AvatarFallback></Avatar>
@@ -277,7 +314,9 @@ function WorkspaceTab() {
               <div className="text-xs text-muted-foreground">{user?.email}</div>
             </div>
           </div>
-          <Badge variant="outline" className={ROLE_STYLES[user?.role] || ROLE_STYLES.viewer}>{user?.role || 'viewer'}</Badge>
+          <Badge variant="outline" className={ROLE_STYLES[user?.role] || ROLE_STYLES.viewer}>
+            {user?.role || 'viewer'}
+          </Badge>
         </CardContent>
       </Card>
     </div>
@@ -291,8 +330,7 @@ export function SettingsPage() {
         <h2 className="text-2xl font-semibold tracking-tight">Settings</h2>
         <p className="text-sm text-muted-foreground mt-1">Workspace, integrations and team configuration.</p>
       </div>
-
-      <Tabs defaultValue="team">
+      <Tabs defaultValue="workspace">
         <TabsList className="h-9">
           <TabsTrigger value="workspace" className="h-7 text-xs">Workspace</TabsTrigger>
           <TabsTrigger value="team" className="h-7 text-xs">Team</TabsTrigger>

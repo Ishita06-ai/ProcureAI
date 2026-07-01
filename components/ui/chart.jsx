@@ -2,7 +2,7 @@
 import * as React from "react"
 // Static import: recharts namespaces are used as JSX component types, which
 // next/dynamic can't return. Consumers should next/dynamic this whole file.
-// oxlint-disable-next-line emergent/prefer-dynamic-import
+// oxlint-disable-next-line /prefer-dynamic-import
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
@@ -63,7 +63,7 @@ const ChartStyle = ({
     <style
       dangerouslySetInnerHTML={{
         // THEMES is a module-level const literal — provably non-null at this call site.
-        // oxlint-disable-next-line emergent/safe-object-methods
+        // oxlint-disable-next-line /safe-object-methods
         __html: Object.entries(THEMES)
           .map(([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {

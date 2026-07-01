@@ -23,15 +23,17 @@ export function KpiCard({ item, index = 0 }) {
             <div className="text-xs font-medium text-muted-foreground">{item.label}</div>
             <div className="mt-2 text-2xl font-semibold tracking-tight">{item.value}</div>
           </div>
-          <div
-            className={cn(
-              'inline-flex items-center gap-1 text-xs font-medium rounded-full px-2 py-1',
-              up ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
-            )}
-          >
-            {up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-            {Math.abs(item.delta)}%
-          </div>
+          {item.delta !== null && item.delta !== undefined && (
+            <div
+              className={cn(
+                'inline-flex items-center gap-1 text-xs font-medium rounded-full px-2 py-1',
+                up ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+              )}
+            >
+              {up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+              {Math.abs(item.delta)}%
+            </div>
+          )}
         </div>
         <div className="mt-4 h-12">
           <ResponsiveContainer width="100%" height="100%">

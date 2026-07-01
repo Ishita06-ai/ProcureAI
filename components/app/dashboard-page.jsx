@@ -13,56 +13,57 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { fmtCurrency } from '@/lib/procurement-utils';
 
 const accents = {
-  monthSpend:        'from-violet-500/40 to-fuchsia-500/10',
-  pendingApprovals:  'from-amber-500/40 to-orange-500/10',
-  openPurchaseOrders:'from-sky-500/40 to-cyan-500/10',
-  vendorsAtRisk:     'from-rose-500/40 to-orange-500/10',
+  monthSpend:         'from-violet-500/40 to-fuchsia-500/10',
+  pendingApprovals:   'from-amber-500/40 to-orange-500/10',
+  openPurchaseOrders: 'from-sky-500/40 to-cyan-500/10',
+  vendorsAtRisk:      'from-rose-500/40 to-orange-500/10',
 };
 
 function buildKpis(d) {
   const k = d?.kpis || {};
+  const s = d?.sparks || {};
+  const fallback = [0, 0, 0, 0, 0, 0, 0, 0];
   return [
     {
       key: 'monthSpend',
       label: 'Spend (MTD)',
       value: fmtCurrency(k.monthSpend || 0),
-      delta: 12.4, trend: 'up',
-      sub: `${k.openPurchaseOrders ?? 0} open POs, ${k.deliveredPOs ?? 0} delivered`,
-      spark: [3.1, 3.4, 3.2, 3.8, 4.1, 4.0, 4.4, 4.6, 4.5, 4.7, 4.6, (k.monthSpend || 0) / 1e6],
+      delta: null, trend: 'up',
+      sub: `${k.openPurchaseOrders ?? 0} open POs · ${k.deliveredPOs ?? 0} delivered`,
+      spark: s.spend?.length ? s.spend : fallback,
       accent: accents.monthSpend,
     },
     {
       key: 'pendingApprovals',
       label: 'Pending Approvals',
       value: String(k.pendingApprovals ?? 0),
-      delta: k.pendingApprovals > 0 ? +k.pendingApprovals : 0,
-      trend: k.pendingApprovals > 0 ? 'up' : 'down',
-      sub: `${k.approvedPRs ?? 0} approved \u00b7 awaiting PO`,
-      spark: [1, 2, 1, 3, 2, 3, 2, k.pendingApprovals || 0],
+      delta: null, trend: k.pendingApprovals > 0 ? 'up' : 'down',
+      sub: `${k.approvedPRs ?? 0} approved · awaiting PO`,
+      spark: s.approval?.length ? s.approval : fallback,
       accent: accents.pendingApprovals,
     },
     {
       key: 'openPurchaseOrders',
       label: 'Open Purchase Orders',
       value: String(k.openPurchaseOrders ?? 0),
-      delta: -3.1, trend: 'down',
+      delta: null, trend: 'down',
       sub: `${k.openPRs ?? 0} active requests`,
-      spark: [9, 8, 7, 8, 6, 7, 6, k.openPurchaseOrders || 0],
+      spark: s.po?.length ? s.po : fallback,
       accent: accents.openPurchaseOrders,
     },
     {
       key: 'vendorsAtRisk',
       label: 'Vendors At Risk',
       value: String(k.vendorsAtRisk ?? 0),
-      delta: 2, trend: 'up',
+      delta: null, trend: k.vendorsAtRisk > 0 ? 'up' : 'down',
       sub: `out of ${k.vendorCount ?? 0} vendors`,
-      spark: [4, 5, 4, 6, 5, 6, 5, k.vendorsAtRisk || 0],
+      spark: fallback,
       accent: accents.vendorsAtRisk,
     },
   ];
 }
 
-export function DashboardPage() {
+export function DashboardPage({ onNavigate }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -79,7 +80,7 @@ export function DashboardPage() {
 
   return (
     <div className="px-4 lg:px-8 py-6 lg:py-8 space-y-6">
-      <AiInsightBanner />
+      <AiInsightBanner onNavigate={onNavigate} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {loading
@@ -90,16 +91,16 @@ export function DashboardPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div className="xl:col-span-2"><SpendChart /></div>
-        <CategoryDonut />
+        <CategoryDonut data={data?.distribution || []} loading={loading} />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div className="xl:col-span-2"><PoTable /></div>
-        <ActivityFeed />
+        <div className="xl:col-span-2"><PoTable data={data?.recentPOs || []} loading={loading} onNavigate={onNavigate} /></div>
+        <ActivityFeed data={data?.activityFeed || []} loading={loading} />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div className="xl:col-span-1"><VendorRanking /></div>
+        <div className="xl:col-span-1"><VendorRanking data={data?.topVendors || []} loading={loading} /></div>
       </div>
     </div>
   );

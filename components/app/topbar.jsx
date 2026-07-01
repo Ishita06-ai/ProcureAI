@@ -73,9 +73,9 @@ export function Topbar({ onOpenPalette, title, subtitle, onNavigate, onOpenMobil
         <Search className="h-4 w-4" />
       </Button>
 
-      <Button size="sm" className="hidden md:inline-flex h-9 gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90">
-        <Plus className="h-4 w-4" /> New PO
-      </Button>
+     <Button size="sm" className="hidden md:inline-flex h-9 gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => onNavigate?.('procurement')}>
+  <Plus className="h-4 w-4" /> New PO
+</Button>
 
       <Button
         size="icon"

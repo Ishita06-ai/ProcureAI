@@ -1,6 +1,7 @@
 // The Express-shaped "app". Composes middleware + router and exposes a single
 // `handle(req, res)` entrypoint. In standalone Express, replace this file with:
 //   const app = express(); app.use(helmet()); app.use(...); app.use('/api', apiRouter); app.listen(PORT);
+import { validateEnv } from './config/env.js';
 import { Router } from './router.js';
 import apiRouter from './routes/index.js';
 import { errorMiddleware } from './middleware/error.js';
@@ -9,6 +10,8 @@ import { securityHeaders, sanitizeInput } from './middleware/security.js';
 import { requestId, requestLogger } from './middleware/requestId.js';
 import { rateLimit } from './middleware/rateLimit.js';
 import { logger } from './utils/logger.js';
+
+validateEnv();
 
 const app = new Router();
 
