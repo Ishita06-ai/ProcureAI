@@ -36,36 +36,35 @@ const VENDORS = [
 ];
 
 const WAREHOUSES = [
-  { code: 'HQ-MAIN', name: 'HQ Main Warehouse',     type: 'main',         city: 'Berlin',  country: 'Germany', capacityUnits: 50000, managerName: 'Lena Okafor' },
-  { code: 'EU-FRA',  name: 'Frankfurt Distribution',type: 'distribution', city: 'Frankfurt', country: 'Germany', capacityUnits: 30000, managerName: 'Alex Müller' },
-  { code: 'US-WEST', name: 'US West Coast Hub',     type: 'distribution', city: 'Oakland', country: 'USA',     capacityUnits: 40000, managerName: 'Jordan Rivera' },
+  { code: 'HQ-MAIN', name: 'HQ Main Warehouse',     type: 'main',         city: 'Berlin',    country: 'Germany', capacityUnits: 50000, managerName: 'Lena Okafor' },
+  { code: 'EU-FRA',  name: 'Frankfurt Distribution', type: 'distribution', city: 'Frankfurt', country: 'Germany', capacityUnits: 30000, managerName: 'Alex Müller' },
+  { code: 'US-WEST', name: 'US West Coast Hub',      type: 'distribution', city: 'Oakland',   country: 'USA',     capacityUnits: 40000, managerName: 'Jordan Rivera' },
 ];
 
 const PRODUCTS = [
-  { sku: 'MBP-14-M4',  name: 'MacBook Pro 14" M4',         category: 'Electronics',    unit: 'pcs', unitCost: 2050, unitPrice: 2399, reorderLevel: 6,   safetyStock: 12, leadTimeDays: 5 },
-  { sku: 'PTZ-CAM-1',  name: 'PTZ Conference Camera Pro',  category: 'Electronics',    unit: 'pcs', unitCost: 1480, unitPrice: 1800, reorderLevel: 4,   safetyStock: 8 },
-  { sku: 'ALU-6061',   name: 'Aluminum 6061-T6 Ingot',     category: 'Raw Materials',  unit: 'kg',  unitCost: 7.10, unitPrice: 8.40, reorderLevel: 800, safetyStock: 1200, leadTimeDays: 18 },
-  { sku: 'PKG-MAIL-K', name: 'Premium Kraft Mailer',       category: 'Packaging',      unit: 'pcs', unitCost: 0.34, unitPrice: 0.42, reorderLevel: 2500,safetyStock: 5000 },
-  { sku: 'PKG-TIS-BR', name: 'Branded Tissue Insert',      category: 'Packaging',      unit: 'pcs', unitCost: 0.06, unitPrice: 0.08, reorderLevel: 3000,safetyStock: 6000 },
-  { sku: 'COMP-HV-C',  name: 'HVAC Compressor Unit C',     category: 'Machinery',      unit: 'pcs', unitCost: 3700, unitPrice: 4200, reorderLevel: 2,   safetyStock: 4,  leadTimeDays: 14 },
-  { sku: 'COOL-50L',   name: 'Coolant Drum 50L',           category: 'Machinery',      unit: 'drum',unitCost: 180,  unitPrice: 220,  reorderLevel: 8,   safetyStock: 16, expiryTrackable: true, batchTrackable: true },
+  { sku: 'MBP-14-M4',  name: 'MacBook Pro 14" M4',          category: 'Electronics',    unit: 'pcs',  unitCost: 2050, unitPrice: 2399, reorderLevel: 6,    safetyStock: 12,   leadTimeDays: 5 },
+  { sku: 'PTZ-CAM-1',  name: 'PTZ Conference Camera Pro',   category: 'Electronics',    unit: 'pcs',  unitCost: 1480, unitPrice: 1800, reorderLevel: 4,    safetyStock: 8 },
+  { sku: 'ALU-6061',   name: 'Aluminum 6061-T6 Ingot',      category: 'Raw Materials',  unit: 'kg',   unitCost: 7.10, unitPrice: 8.40, reorderLevel: 800,  safetyStock: 1200, leadTimeDays: 18 },
+  { sku: 'PKG-MAIL-K', name: 'Premium Kraft Mailer',        category: 'Packaging',      unit: 'pcs',  unitCost: 0.34, unitPrice: 0.42, reorderLevel: 2500, safetyStock: 5000 },
+  { sku: 'PKG-TIS-BR', name: 'Branded Tissue Insert',       category: 'Packaging',      unit: 'pcs',  unitCost: 0.06, unitPrice: 0.08, reorderLevel: 3000, safetyStock: 6000 },
+  { sku: 'COMP-HV-C',  name: 'HVAC Compressor Unit C',      category: 'Machinery',      unit: 'pcs',  unitCost: 3700, unitPrice: 4200, reorderLevel: 2,    safetyStock: 4,    leadTimeDays: 14 },
+  { sku: 'COOL-50L',   name: 'Coolant Drum 50L',            category: 'Machinery',      unit: 'drum', unitCost: 180,  unitPrice: 220,  reorderLevel: 8,    safetyStock: 16,   expiryTrackable: true, batchTrackable: true },
   { sku: 'HOOD-EMB',   name: 'Heavyweight Hoodie, Embroidered', category: 'Office Supplies', unit: 'pcs', unitCost: 32, unitPrice: 38, reorderLevel: 50, safetyStock: 100 },
-  { sku: 'NB-HC-BR',   name: 'Hardcover Notebook, Branded',category: 'Office Supplies',unit: 'pcs', unitCost: 7.20, unitPrice: 9, reorderLevel: 50, safetyStock: 100 },
-  { sku: 'PAPER-A4-X', name: 'Premium A4 Paper 80gsm',     category: 'Office Supplies',unit: 'ream',unitCost: 4.20, unitPrice: 5.20, reorderLevel: 100, safetyStock: 200 },
+  { sku: 'NB-HC-BR',   name: 'Hardcover Notebook, Branded', category: 'Office Supplies', unit: 'pcs', unitCost: 7.20, unitPrice: 9,  reorderLevel: 50,   safetyStock: 100 },
+  { sku: 'PAPER-A4-X', name: 'Premium A4 Paper 80gsm',      category: 'Office Supplies', unit: 'ream', unitCost: 4.20, unitPrice: 5.20, reorderLevel: 100, safetyStock: 200 },
 ];
 
-// productSku → distribution of stock across warehouses [hq, fra, us]
 const STOCK_DIST = {
   'MBP-14-M4':  [18, 6,  4],
   'PTZ-CAM-1':  [10, 3,  2],
   'ALU-6061':   [3200, 0, 1600],
   'PKG-MAIL-K': [8400, 4200, 0],
-  'PKG-TIS-BR': [2200, 1100, 0],   // low stock
-  'COMP-HV-C':  [1, 0, 1],          // critically low
+  'PKG-TIS-BR': [2200, 1100, 0],
+  'COMP-HV-C':  [1, 0, 1],
   'COOL-50L':   [22, 8, 6],
   'HOOD-EMB':   [240, 60, 30],
   'NB-HC-BR':   [180, 80, 40],
-  'PAPER-A4-X': [60, 30, 20],       // low stock
+  'PAPER-A4-X': [60, 30, 20],
 };
 
 function buildChain(amount) {
@@ -115,7 +114,7 @@ function pr({ number, title, description, department, priority, items, status, c
 
 async function run() {
   await connectDB();
-  console.log('Connected. Reseeding…');
+  console.log('Connected. Reseeding...');
   await Promise.all([
     Vendor.deleteMany({}), PurchaseOrder.deleteMany({}), PurchaseRequest.deleteMany({}),
     GoodsReceivedNote.deleteMany({}), Warehouse.deleteMany({}), Product.deleteMany({}),
@@ -126,7 +125,6 @@ async function run() {
   const byName = Object.fromEntries(vendors.map(v => [v.name, v]));
   console.log(`Vendors: ${vendors.length}`);
 
-  // Warehouses + Products + Stock
   const warehouses = await Warehouse.insertMany(WAREHOUSES);
   console.log(`Warehouses: ${warehouses.length}`);
   const byCode = Object.fromEntries(warehouses.map(w => [w.code, w]));
@@ -138,7 +136,6 @@ async function run() {
   console.log(`Products: ${products.length}`);
   const bySku = Object.fromEntries(products.map(p => [p.sku, p]));
 
-  // Initial stock levels + a stock-in movement for each
   const levels = [];
   const movements = [];
   const dt0 = new Date(Date.now() - 30 * 86400000);
@@ -163,7 +160,6 @@ async function run() {
   await StockMovement.insertMany(movements);
   console.log(`Stock levels: ${levels.length}, movements: ${movements.length}`);
 
-  // PRs
   const PRS = [
     pr({ number: 'PR-20431', title: 'Q3 Packaging Refresh', description: 'Refresh primary & secondary packaging across all SKUs ahead of holiday season.',
       department: 'Operations', priority: 'high', requesterName: 'Sasha Patel', neededInDays: 21,
@@ -220,20 +216,25 @@ async function run() {
   const insertedPRs = await PurchaseRequest.insertMany(PRS);
   console.log(`Purchase requests: ${insertedPRs.length}`);
 
-  // POs (include line items with SKUs so GRN can flow into inventory)
   const owners = ['Ishita R', 'Sasha Patel', 'Jordan Rivera', 'Lena Okafor', 'Alex Müller'];
   const poDefs = [
-    { number: 'PO-10293', vendor: 'Apex Components Ltd.', status: 'Approved',   amount: 84200, lines: [{ sku: 'MBP-14-M4', qty: 35, unitPrice: 2050 }] },
-    { number: 'PO-10294', vendor: 'Northwind Logistics',  status: 'In Transit', amount: 12450, eta: '2 days', deliveryStatus: 'Shipped', lines: [{ sku: 'PAPER-A4-X', qty: 800, unitPrice: 4.2 }] },
-    { number: 'PO-10295', vendor: 'Helix Materials Co.',  status: 'Pending',    amount: 47210, lines: [{ sku: 'ALU-6061', qty: 5600, unitPrice: 8.4 }] },
-    { number: 'PO-10296', vendor: 'Kairo Print Works',    status: 'Approved',   amount: 9320,  lines: [{ sku: 'PKG-MAIL-K', qty: 18000, unitPrice: 0.34 }] },
-    { number: 'PO-10297', vendor: 'Solace Cloud Services',status: 'Pending',    amount: 28800, lines: [{ sku: 'NB-HC-BR', qty: 320, unitPrice: 7.2 }] },
-    { number: 'PO-10298', vendor: 'Bramble & Co.',        status: 'Delivered',  amount: 65400, deliveryStatus: 'Received', deliveredAt: new Date(Date.now() - 5 * 86400000), lines: [{ sku: 'HOOD-EMB', qty: 250, unitPrice: 32 }, { sku: 'NB-HC-BR', qty: 250, unitPrice: 7.2 }] },
+    { number: 'PO-10293', vendor: 'Apex Components Ltd.',  status: 'Approved',   amount: 84200, daysAgo: 165, lines: [{ sku: 'MBP-14-M4',   qty: 35,    unitPrice: 2050 }] },
+    { number: 'PO-10294', vendor: 'Northwind Logistics',   status: 'In Transit', amount: 12450, daysAgo: 140, eta: '2 days', deliveryStatus: 'Shipped', lines: [{ sku: 'PAPER-A4-X', qty: 800,   unitPrice: 4.2  }] },
+    { number: 'PO-10295', vendor: 'Helix Materials Co.',   status: 'Pending',    amount: 47210, daysAgo: 110, lines: [{ sku: 'ALU-6061',    qty: 5600,  unitPrice: 8.4  }] },
+    { number: 'PO-10296', vendor: 'Kairo Print Works',     status: 'Approved',   amount: 9320,  daysAgo: 90,  lines: [{ sku: 'PKG-MAIL-K',  qty: 18000, unitPrice: 0.34 }] },
+    { number: 'PO-10297', vendor: 'Solace Cloud Services', status: 'Pending',    amount: 28800, daysAgo: 60,  lines: [{ sku: 'NB-HC-BR',    qty: 320,   unitPrice: 7.2  }] },
+    { number: 'PO-10298', vendor: 'Bramble & Co.',         status: 'Delivered',  amount: 65400, daysAgo: 35,  deliveryStatus: 'Received', deliveredAt: new Date(Date.now() - 5 * 86400000),  lines: [{ sku: 'HOOD-EMB', qty: 250, unitPrice: 32 }, { sku: 'NB-HC-BR', qty: 250, unitPrice: 7.2 }] },
+    { number: 'PO-10299', vendor: 'Apex Components Ltd.',  status: 'Delivered',  amount: 52100, daysAgo: 20,  deliveryStatus: 'Received', deliveredAt: new Date(Date.now() - 15 * 86400000), lines: [{ sku: 'MBP-14-M4', qty: 20, unitPrice: 2050 }] },
+    { number: 'PO-10300', vendor: 'Lumen Industrial',      status: 'Approved',   amount: 18600, daysAgo: 10,  lines: [{ sku: 'COMP-HV-C',   qty: 4,     unitPrice: 3700 }] },
+    { number: 'PO-10301', vendor: 'Helix Materials Co.',   status: 'In Transit', amount: 31500, daysAgo: 5,   eta: '3 days', deliveryStatus: 'Shipped', lines: [{ sku: 'ALU-6061', qty: 3750, unitPrice: 8.4 }] },
+    { number: 'PO-10302', vendor: 'Orbita Freight',        status: 'Pending',    amount: 8900,  daysAgo: 2,   lines: [{ sku: 'COOL-50L',    qty: 40,    unitPrice: 180  }] },
   ];
+
   const pos = [];
   for (let i = 0; i < poDefs.length; i++) {
     const d = poDefs[i];
     const v = vendors.find(x => x.name === d.vendor);
+    const createdAt = new Date(Date.now() - d.daysAgo * 86400000);
     pos.push({
       number: d.number, vendorId: v._id, vendorName: v.name,
       ownerName: owners[i % owners.length], ownerId: 'seed',
@@ -242,13 +243,13 @@ async function run() {
       deliveredAt: d.deliveredAt,
       eta: d.eta || (d.status === 'Delivered' ? 'Done' : d.status === 'Pending' ? '—' : `${(i % 5) + 1} days`),
       lines: d.lines.map(l => ({ ...l, description: bySku[l.sku]?.name || l.sku, lineTotal: l.qty * l.unitPrice })),
-      activityLog: [{ _id: randomUUID(), at: new Date(), actorName: owners[i % owners.length], action: 'po.created' }],
+      activityLog: [{ _id: randomUUID(), at: createdAt, actorName: owners[i % owners.length], action: 'po.created' }],
+      createdAt,
     });
   }
   const insertedPOs = await PurchaseOrder.insertMany(pos);
   console.log(`Purchase orders: ${insertedPOs.length}`);
 
-  // GRN for the delivered PO — also generate stock-in movements
   const delivered = insertedPOs.find(p => p.status === 'Delivered');
   if (delivered) {
     const grn = await GoodsReceivedNote.create({
@@ -259,7 +260,6 @@ async function run() {
       lines: delivered.lines.map(l => ({ sku: l.sku, description: l.description, qtyOrdered: l.qty, qtyReceived: l.qty, condition: 'good' })),
       notes: 'Delivered ahead of schedule.',
     });
-    // Mirror as stock-in movements at HQ-MAIN (and increment levels — already in opening balance, so this is purely an audit trail event)
     for (const line of grn.lines) {
       const p = bySku[line.sku];
       if (!p) continue;
