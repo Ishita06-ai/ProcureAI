@@ -48,7 +48,7 @@ export const AiService = {
 
     let result;
     try {
-      result = await runAgent({ message, history });
+      result = await runAgent({ message, history, actor });
     } catch (err) {
       logger.error('ai.service.agent_failed', { err: err.message });
       result = {

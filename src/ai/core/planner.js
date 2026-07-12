@@ -31,14 +31,14 @@ export function plan(message = '') {
   const text = message || '';
   const steps = INTENTS
     .filter((intent) => matches(text, ...intent.keywords))
-    .map((intent) => ({ tool: intent.tool, input: {} }));
+    .map((intent) => ({ tool: intent.tool, input: { query: text } }));
 
   // Vague/general questions ("how are we doing?", "give me a snapshot") get
   // the broadest, cheapest signal: analytics KPIs + inventory low-stock.
   if (steps.length === 0) {
     return [
-      { tool: 'analytics', input: {} },
-      { tool: 'inventory', input: {} },
+      { tool: 'analytics', input: { query: text } },
+      { tool: 'inventory', input: { query: text } },
     ];
   }
   return steps;

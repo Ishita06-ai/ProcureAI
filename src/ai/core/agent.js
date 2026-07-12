@@ -10,19 +10,34 @@ import { plan } from './planner.js';
 import { execute } from './executor.js';
 import { generateReply } from '../services/gemini.service.js';
 import { buildSupervisorPrompt } from '../prompts/supervisor.prompt.js';
+import { groundedOnly } from './toolResult.js';
 import { logger } from '../utils/logger.js';
 
+// "low_stock" -> "Low Stock"
+function humanizeAction(action) {
+  if (!action) return '';
+  return action.split('_').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
+}
+
+function toolLabel(tool) {
+  return tool.charAt(0).toUpperCase() + tool.slice(1);
+}
+
 function toCitations(toolResults) {
-  return toolResults
-    .filter((r) => !r.error && r.data)
-    .map((r) => ({ label: r.description || r.tool, kind: r.tool, value: r.tool }));
+  return groundedOnly(toolResults).map((r) => {
+    const action = r.data?.action;
+    return {
+      label: action ? `${toolLabel(r.tool)} · ${humanizeAction(action)}` : (r.description || r.tool),
+      kind: r.tool,
+      value: action || r.tool,
+    };
+  });
 }
 
 // Data-only fallback used when the LLM provider is unavailable.
 function composeFallback(toolResults) {
-  const lines = toolResults
-    .filter((r) => !r.error && r.data)
-    .map((r) => `• ${r.description}: ${JSON.stringify(r.data).slice(0, 300)}`);
+  const lines = groundedOnly(toolResults)
+    .map((r) => `• ${r.description}: ${JSON.stringify(r.data.data ?? r.data).slice(0, 300)}`);
 
   if (!lines.length) {
     return "I couldn't gather any live data for that question. Try rephrasing, or check the relevant page directly.";
@@ -36,15 +51,17 @@ function composeFallback(toolResults) {
  * @param {object} params
  * @param {string} params.message - the user's latest message
  * @param {{role: 'user'|'assistant', content: string}[]} [params.history] - prior turns
+ * @param {{id?: string, name?: string}} [params.actor] - the requesting user, if any.
+ *   Forwarded to every tool as { userId } so tools can personalize (e.g. notifications).
  * @returns {Promise<{content: string, citations: object[], toolResults: object[], provider: string, usedFallback: boolean}>}
  */
-export async function runAgent({ message, history = [] }) {
+export async function runAgent({ message, history = [], actor = null }) {
   if (!message || !message.trim()) throw new Error('Empty message');
 
   const planSteps = plan(message);
   logger.info('agent.plan', { message: message.slice(0, 120), steps: planSteps.map((s) => s.tool) });
 
-  const toolResults = await execute(planSteps);
+  const toolResults = await execute(planSteps, { userId: actor?.id ?? null });
   const systemPrompt = buildSupervisorPrompt(toolResults);
 
   let content;
