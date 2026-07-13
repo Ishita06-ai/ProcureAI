@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context.jsx';
@@ -60,9 +61,24 @@ function MessageBubble({ msg, userName }) {
         {!isUser && msg.citations?.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1.5">
             {msg.citations.map((c, i) => (
-              <Badge key={i} variant="outline" className="h-5 text-[10px] bg-card border-border/70 text-muted-foreground gap-1">
-                <Sparkles className="h-2.5 w-2.5 text-primary" /> {c.label}
-              </Badge>
+              <Popover key={i}>
+                <PopoverTrigger asChild>
+                  <button type="button">
+                    <Badge variant="outline" className="h-5 text-[10px] bg-card border-border/70 text-muted-foreground gap-1 cursor-pointer hover:border-border hover:bg-accent/40 transition-colors">
+                      <Sparkles className="h-2.5 w-2.5 text-primary" /> {c.label}
+                    </Badge>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-3" align="start">
+                  <div className="text-[11px] font-medium mb-1.5">{c.label}</div>
+                  <div className="text-[10px] text-muted-foreground mb-2">
+                    Live data pulled from your workspace to ground this part of the answer.
+                  </div>
+                  <pre className="text-[10px] leading-relaxed bg-muted/50 rounded-md p-2 max-h-48 overflow-auto whitespace-pre-wrap break-all">
+                    {c.value?.preview || 'No preview available.'}
+                  </pre>
+                </PopoverContent>
+              </Popover>
             ))}
           </div>
         )}

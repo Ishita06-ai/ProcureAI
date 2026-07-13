@@ -3,6 +3,7 @@ import { StockLevel } from '../models/stockLevel.model.js';
 import { StockMovement } from '../models/stockMovement.model.js';
 import { Warehouse } from '../models/warehouse.model.js';
 import { notFound, badRequest } from '../utils/apiError.js';
+import { cached, cache } from '../utils/cache.js';
 
 // Shared by lowStockReport() and outOfStockReport(): given a list of products,
 // aggregate their StockLevel documents into onHand/available per product.
@@ -53,6 +54,7 @@ export const StockService = {
     lvl.lastMovementAt = new Date();
     await lvl.save();
     const mv = await StockMovement.create(asMovement({ product, warehouse, type: 'IN', qty, unitCost, refType, refId, refNumber, reason, lotNumber, expiryDate, actor }));
+    await cache.delPrefix('stock:');
     return mv.toObject();
   },
 
@@ -67,6 +69,7 @@ export const StockService = {
     lvl.lastMovementAt = new Date();
     await lvl.save();
     const mv = await StockMovement.create(asMovement({ product, warehouse, type: 'OUT', qty, refType, refId, refNumber, reason, actor }));
+    await cache.delPrefix('stock:');
     return mv.toObject();
   },
 
@@ -82,6 +85,7 @@ export const StockService = {
     lvl.lastMovementAt = new Date();
     await lvl.save();
     const mv = await StockMovement.create(asMovement({ product, warehouse, type: 'ADJUSTMENT', qty, reason: reason || 'Manual adjustment', lotNumber, expiryDate, refType: 'Adjustment', actor }));
+    await cache.delPrefix('stock:');
     return mv.toObject();
   },
 
@@ -106,6 +110,7 @@ export const StockService = {
       asMovement({ product, warehouse: fromWh, type: 'TRANSFER_OUT', qty, refType: 'Transfer', refId, refNumber: refId, reason, counterWarehouse: toWh, actor }),
       asMovement({ product, warehouse: toWh, type: 'TRANSFER_IN',  qty, refType: 'Transfer', refId, refNumber: refId, reason, counterWarehouse: fromWh, actor }),
     ]);
+    await cache.delPrefix('stock:');
     return movements;
   },
 
@@ -128,24 +133,29 @@ export const StockService = {
   },
 
   async lowStockReport() {
-    const products = await Product.find({ status: 'active', reorderLevel: { $gt: 0 } }).lean();
-    const withAvail = await withAvailability(products);
-    return withAvail
-      .map(p => ({ ...p, deficit: Math.max(0, p.reorderLevel - p.available) }))
-      .filter(p => p.available <= p.reorderLevel)
-      .sort((a, b) => b.deficit - a.deficit);
+    return cached('stock:lowStockReport', 20, async () => {
+      const products = await Product.find({ status: 'active', reorderLevel: { $gt: 0 } }).lean();
+      const withAvail = await withAvailability(products);
+      return withAvail
+        .map(p => ({ ...p, deficit: Math.max(0, p.reorderLevel - p.available) }))
+        .filter(p => p.available <= p.reorderLevel)
+        .sort((a, b) => b.deficit - a.deficit);
+    });
   },
 
   // Out-of-stock is intentionally NOT restricted to reorderLevel > 0 (unlike
   // lowStockReport) — a product with no reorder level configured can still be
   // fully depleted and worth surfacing.
   async outOfStockReport() {
-    const products = await Product.find({ status: 'active' }).lean();
-    const withAvail = await withAvailability(products);
-    return withAvail.filter(p => p.available <= 0);
+    return cached('stock:outOfStockReport', 20, async () => {
+      const products = await Product.find({ status: 'active' }).lean();
+      const withAvail = await withAvailability(products);
+      return withAvail.filter(p => p.available <= 0);
+    });
   },
 
   async dashboard() {
+    return cached('stock:dashboard', 20, async () => {
     const [
       productCount, warehouseCount, totalValueAgg, byCategoryValue,
       byWarehouseStock, recentMovements, lowStock, movementsToday,
@@ -191,5 +201,11 @@ export const StockService = {
       recentMovements,
       lowStock: lowStock.slice(0, 8),
     };
+    });
   },
+
+  // Call after any stock-affecting write elsewhere in the app (e.g. GRN
+  // receipt) so the AI Assistant and dashboard never serve stale numbers
+  // for longer than one cache TTL by accident.
+  invalidate() { return cache.delPrefix('stock:'); },
 };

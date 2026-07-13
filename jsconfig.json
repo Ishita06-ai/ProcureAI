@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
       "baseUrl": ".",
+      "ignoreDeprecations": "6.0",
       "paths": {
         "@/*": ["./*"],
         "@/components/*": ["./components/*"],
@@ -9,4 +10,4 @@
       }
     },
     "exclude": ["node_modules", ".next"]
-  }
+}

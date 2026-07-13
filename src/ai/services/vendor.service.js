@@ -1,5 +1,7 @@
 import { Vendor } from '../models/vendor.model.js';
 import { notFound } from '../utils/apiError.js';
+import { cached, cache } from '../utils/cache.js';
+import { DashboardService } from './dashboard.service.js';
 
 export const VendorService = {
   async list({ q, category, risk, status, page, limit, skip, sort = '-createdAt' }) {
@@ -28,38 +30,47 @@ export const VendorService = {
 
   async create(data, actor) {
     const v = await Vendor.create({ ...data, createdBy: actor?.id });
+    await Promise.all([cache.delPrefix('vendor:'), DashboardService.invalidate()]);
     return v.toObject();
   },
 
   async update(id, data) {
     const v = await Vendor.findByIdAndUpdate(id, data, { new: true, runValidators: true }).lean();
     if (!v) throw notFound('Vendor not found');
+    await Promise.all([cache.delPrefix('vendor:'), DashboardService.invalidate()]);
     return v;
   },
 
   async remove(id) {
     const v = await Vendor.findByIdAndDelete(id);
     if (!v) throw notFound('Vendor not found');
+    await Promise.all([cache.delPrefix('vendor:'), DashboardService.invalidate()]);
     return { id };
   },
 
   async topPerformers(limit = 6) {
-    return Vendor.find().sort({ score: -1 }).limit(limit).lean();
+    return cached(`vendor:topPerformers:${limit}`, 30, () =>
+      Vendor.find().sort({ score: -1 }).limit(limit).lean()
+    );
   },
 
   // Vendors that need attention: explicitly flagged high risk, or in a
   // watch/at-risk status. Sorted worst-first (lowest score first).
   async riskyVendors(limit = 10) {
-    return Vendor.find({
-      $or: [{ risk: 'high' }, { status: { $in: ['At Risk', 'Watchlist'] } }],
-    }).sort({ score: 1 }).limit(limit).lean();
+    return cached(`vendor:riskyVendors:${limit}`, 30, () =>
+      Vendor.find({
+        $or: [{ risk: 'high' }, { status: { $in: ['At Risk', 'Watchlist'] } }],
+      }).sort({ score: 1 }).limit(limit).lean()
+    );
   },
 
   async categoryDistribution() {
-    const agg = await Vendor.aggregate([
-      { $group: { _id: '$category', spend: { $sum: '$spend' }, count: { $sum: 1 } } },
-      { $sort: { spend: -1 } },
-    ]);
-    return agg.map(a => ({ name: a._id, spend: a.spend, count: a.count }));
+    return cached('vendor:categoryDistribution', 30, async () => {
+      const agg = await Vendor.aggregate([
+        { $group: { _id: '$category', spend: { $sum: '$spend' }, count: { $sum: 1 } } },
+        { $sort: { spend: -1 } },
+      ]);
+      return agg.map(a => ({ name: a._id, spend: a.spend, count: a.count }));
+    });
   },
 };
