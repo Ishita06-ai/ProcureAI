@@ -174,11 +174,19 @@ export function AiAssistantPage() {
               <div className="text-center py-8 text-[11px] text-muted-foreground">No conversations yet.</div>
             )}
             {conversations.map(c => (
-              <button
+              <div
                 key={c._id}
+                role="button"
+                tabIndex={0}
                 onClick={() => openConvo(c._id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openConvo(c._id);
+                  }
+                }}
                 className={cn(
-                  'group w-full text-left flex items-start gap-2 rounded-lg p-2.5 transition-colors',
+                  'group w-full text-left flex items-start gap-2 rounded-lg p-2.5 transition-colors cursor-pointer',
                   activeId === c._id ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
                 )}
               >
@@ -187,10 +195,14 @@ export function AiAssistantPage() {
                   <div className="text-xs font-medium truncate">{c.title}</div>
                   <div className="text-[10px] text-muted-foreground">{fmtRelative(c.updatedAt)}</div>
                 </div>
-                <button onClick={(e) => removeConvo(c._id, e)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive" aria-label="Delete">
+                <button
+                  onClick={(e) => removeConvo(c._id, e)}
+                  className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+                  aria-label="Delete"
+                >
                   <Trash2 className="h-3 w-3" />
                 </button>
-              </button>
+              </div>
             ))}
           </div>
         </ScrollArea>
