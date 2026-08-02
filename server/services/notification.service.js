@@ -1,9 +1,10 @@
 import { Notification } from '../models/notification.model.js';
 
 export const NotificationService = {
-  async list({ userId, unreadOnly, limit = 30 }) {
+  async list({ userId, unreadOnly, kind, limit = 30 }) {
     const filter = { $or: [{ userId }, { userId: null }] };
     if (unreadOnly === 'true' || unreadOnly === true) filter.readAt = null;
+    if (kind) filter.kind = kind;
     return Notification.find(filter).sort({ createdAt: -1 }).limit(limit).lean();
   },
   async unreadCount(userId) {

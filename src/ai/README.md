@@ -43,7 +43,7 @@ src/ai/core/agent.js                  runAgent({ message, history, actor })
 | `core/executor.js` | Runs a plan against the registry. Isolates per-tool failures. |
 | `core/toolRegistry.js` | Auto-discovers `tools/*.tool.js` via a webpack-safe dynamic import. |
 | `core/toolResult.js` | Shared "is this result safe to show the user/LLM" filter. |
-| `tools/*.tool.js` | One file per domain (inventory, vendor, analytics, notification). Read-only, delegate to existing `server/services/*`. |
+| `tools/*.tool.js` | One file per domain (inventory, vendor, analytics, notification, purchase orders). Read-only, delegate to existing `server/services/*`. |
 | `prompts/supervisor.prompt.js` | Persona + serializes grounded tool data into the system prompt. |
 | `services/gemini.service.js` | The only file that talks to an LLM provider. |
 | `utils/logger.js` | Re-exports the project's existing logger with `{ scope: 'ai' }`. |
@@ -79,7 +79,8 @@ is the Agent's job, not the tool's.
 2. Delegate to an existing `server/services/*` — add a method there first if
    the data access doesn't exist yet, rather than querying Mongo from the tool.
 3. That's it — `toolRegistry.js` picks it up automatically. To make the
-   planner actually route messages to it, add a keyword group in `planner.js`.
+   planner actually route messages to it, add a keyword group in `planner.js`
+   (e.g. `{ tool: 'po', keywords: ['purchase order', 'delivery', ...] }`).
 
 ## Why a keyword planner instead of LLM function-calling
 

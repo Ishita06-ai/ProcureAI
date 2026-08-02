@@ -21,6 +21,7 @@ const INTENTS = [
   { tool: 'vendor', keywords: ['vendor', 'supplier', 'risk', 'preferred'] },
   { tool: 'analytics', keywords: ['spend', 'cost', 'budget', 'savings', 'expense', 'trend', 'forecast', 'approval', 'pending', 'department', 'category'] },
   { tool: 'notification', keywords: ['notification', 'alert', 'attention', 'unread'] },
+  { tool: 'po', keywords: ['purchase order', 'delivery', 'shipment', 'transit', 'delivered', 'po number'] },
 ];
 
 /**

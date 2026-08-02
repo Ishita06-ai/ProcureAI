@@ -127,6 +127,23 @@ export const StockService = {
       .sort((a, b) => b.deficit - a.deficit);
   },
 
+  async outOfStockReport() {
+    const products = await Product.find({ status: 'active' }).lean();
+    const ids = products.map(p => p._id);
+    const levels = await StockLevel.aggregate([
+      { $match: { productId: { $in: ids } } },
+      { $group: { _id: '$productId', onHand: { $sum: '$onHand' }, reserved: { $sum: '$reserved' } } },
+    ]);
+    const byProduct = Object.fromEntries(levels.map(l => [l._id, l]));
+    return products
+      .map(p => {
+        const s = byProduct[p._id] || { onHand: 0, reserved: 0 };
+        const available = Math.max(0, s.onHand - s.reserved);
+        return { ...p, onHand: s.onHand, available };
+      })
+      .filter(p => p.available === 0);
+  },
+
   async dashboard() {
     const [
       productCount, warehouseCount, totalValueAgg, byCategoryValue,

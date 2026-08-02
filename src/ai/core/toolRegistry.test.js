@@ -56,7 +56,7 @@ describe('toolRegistry — real auto-discovery (requires node_modules)', () => {
   test('discovers every *.tool.js file under src/ai/tools/', async () => {
     const tools = await getAllTools();
     const names = tools.map((t) => t.name).sort();
-    assert.deepEqual(names, ['analytics', 'inventory', 'notification', 'vendor']);
+    assert.deepEqual(names, ['analytics', 'inventory', 'notification', 'po', 'vendor']);
   });
 
   test('every discovered tool satisfies the {name, description, execute} contract', async () => {

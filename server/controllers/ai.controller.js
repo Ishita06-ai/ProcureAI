@@ -1,6 +1,6 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ok } from '../utils/apiResponse.js';
-import { AiService } from '../services/ai.service.js';
+import { AiService } from '../../src/ai/services/ai.service.js';
 import { recordAudit } from '../services/audit.service.js';
 
 export const AiController = {

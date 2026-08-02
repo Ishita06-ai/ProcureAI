@@ -53,6 +53,16 @@ export const ProductService = {
     return { ...enriched, stockByWarehouse, recentMovements };
   },
 
+  async searchByName(term, limit = 10) {
+    const products = await Product.find({ name: new RegExp(term, 'i') }).limit(limit).lean();
+    return attachStock(products);
+  },
+
+  async searchBySku(term, limit = 10) {
+    const products = await Product.find({ sku: new RegExp(String(term || '').toUpperCase(), 'i') }).limit(limit).lean();
+    return attachStock(products);
+  },
+
   async create(data) {
     data.sku = data.sku.toUpperCase();
     const existing = await Product.findOne({ sku: data.sku });

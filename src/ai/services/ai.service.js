@@ -5,9 +5,9 @@
 // conversation persistence in, Agent out. Its public shape (chat,
 // listConversations, getConversation, deleteConversation) is unchanged, so
 // ai.controller.js and ai.routes.js require ZERO changes.
-import { AiConversation } from '../models/aiConversation.model.js';
-import { notFound } from '../utils/apiError.js';
-import { runAgent } from '../../src/ai/core/agent.js';
+import { AiConversation } from '../../../server/models/aiConversation.model.js';
+import { notFound } from '../../../server/utils/apiError.js';
+import { runAgent } from '../core/agent.js';
 import { logger } from '../utils/logger.js';
 
 export const AiService = {

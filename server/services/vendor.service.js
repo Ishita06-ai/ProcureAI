@@ -47,6 +47,10 @@ export const VendorService = {
     return Vendor.find().sort({ score: -1 }).limit(limit).lean();
   },
 
+  async riskyVendors(limit = 10) {
+    return Vendor.find({ risk: 'high' }).sort({ score: 1, spend: -1 }).limit(limit).lean();
+  },
+
   async categoryDistribution() {
     const agg = await Vendor.aggregate([
       { $group: { _id: '$category', spend: { $sum: '$spend' }, count: { $sum: 1 } } },
