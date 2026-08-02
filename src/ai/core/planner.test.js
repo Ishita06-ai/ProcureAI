@@ -2,7 +2,7 @@
 // no flags, no mocking, no DB.
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { plan } from './planner.js';
+import { plan, hasIntent } from './planner.js';
 
 describe('planner.plan', () => {
   test('routes stock/inventory language to the inventory tool', () => {
@@ -49,5 +49,17 @@ describe('planner.plan', () => {
   test('handles empty input without throwing', () => {
     assert.doesNotThrow(() => plan());
     assert.doesNotThrow(() => plan(''));
+  });
+});
+
+describe('planner.hasIntent', () => {
+  test('true when a concrete intent matches', () => {
+    assert.equal(hasIntent('which vendors are high risk?'), true);
+    assert.equal(hasIntent('do I have unread alerts?'), true);
+  });
+
+  test('false for vague/general questions that hit the fallback', () => {
+    assert.equal(hasIntent('how are we doing?'), false);
+    assert.equal(hasIntent(''), false);
   });
 });

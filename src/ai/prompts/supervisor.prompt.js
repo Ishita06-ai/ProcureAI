@@ -28,4 +28,23 @@ export function buildSupervisorPrompt(toolResults = []) {
   return `${PERSONA}\n\nTOOL_RESULTS (authoritative live data for this answer):\n${grounded || 'No tool produced data for this question.'}`;
 }
 
-export default { buildSupervisorPrompt };
+// Handoff-back prompt: after a specialist agent answers within its own scope,
+// the Supervisor synthesizes the final user-facing response from those
+// findings. Keeps the same grounding rules — never invent data, stay concise.
+/**
+ * @param {{specialist: {label: string}, findings: string}} params
+ * @returns {string}
+ */
+export function buildSynthesisPrompt({ specialist, findings }) {
+  return `You are the Supervisor of a multi-agent procurement intelligence system.
+
+A specialist agent (${specialist.label}) analyzed the user's request against live workspace data and produced the findings below.
+
+Write the final response to the user based ONLY on those findings. Do NOT invent numbers, vendor names, order numbers, or SKUs not present. If the findings are insufficient, say so and suggest where the user can look.
+Format: use short paragraphs and bullets. Quote dollar amounts as $X,XXX. Keep responses under 220 words unless the user explicitly asks for depth.
+
+SPECIALIST FINDINGS:
+${findings}`;
+}
+
+export default { buildSupervisorPrompt, buildSynthesisPrompt };

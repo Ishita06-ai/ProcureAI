@@ -24,15 +24,18 @@ const INTENTS = [
   { tool: 'po', keywords: ['purchase order', 'delivery', 'shipment', 'transit', 'delivered', 'po number'] },
 ];
 
+function matchedIntents(text) {
+  return INTENTS.filter((intent) => matches(text, ...intent.keywords));
+}
+
 /**
  * @param {string} message
  * @returns {{tool: string, input: object}[]} ordered list of tool calls to execute
  */
 export function plan(message = '') {
   const text = message || '';
-  const steps = INTENTS
-    .filter((intent) => matches(text, ...intent.keywords))
-    .map((intent) => ({ tool: intent.tool, input: { query: text } }));
+  const intents = matchedIntents(text);
+  const steps = intents.map((intent) => ({ tool: intent.tool, input: { query: text } }));
 
   // Vague/general questions ("how are we doing?", "give me a snapshot") get
   // the broadest, cheapest signal: analytics KPIs + inventory low-stock.
@@ -45,4 +48,15 @@ export function plan(message = '') {
   return steps;
 }
 
-export default { plan };
+/**
+ * Whether a message matched any concrete intent, as opposed to the vague
+ * "analytics + inventory" fallback. Used by the Supervisor's router to tell
+ * "this topic belongs to a specialist" from "this is a general question".
+ * @param {string} message
+ * @returns {boolean}
+ */
+export function hasIntent(message = '') {
+  return matchedIntents(message || '').length > 0;
+}
+
+export default { plan, hasIntent };

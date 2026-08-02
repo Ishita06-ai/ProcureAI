@@ -10,4 +10,4 @@ const WorkspaceSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 }, { _id: false });
 
-export const Workspace = mongoose.model('Workspace', WorkspaceSchema);
+export const Workspace = mongoose.models.Workspace || mongoose.model('Workspace', WorkspaceSchema);
