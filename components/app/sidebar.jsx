@@ -12,7 +12,7 @@ import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 
 export const NAV = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { key: 'vendors', label: 'Vendors', icon: Users, badge: '128' },
+  { key: 'vendors', label: 'Vendors', icon: Users, badge: '8' },
   { key: 'inventory', label: 'Inventory', icon: Package },
   { key: 'procurement', label: 'Procurement', icon: ShoppingCart, badge: '42' },
   { key: 'analytics', label: 'Analytics', icon: BarChart3 },
