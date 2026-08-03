@@ -97,13 +97,6 @@ export function LoginPage() {
                   </Button>
                 </form>
 
-                <div className="mt-5 flex items-start gap-2 rounded-lg border border-border/60 bg-muted/30 p-3 text-[11px] text-muted-foreground">
-                  <ShieldCheck className="h-3.5 w-3.5 mt-0.5 text-emerald-500 shrink-0" />
-                  <div>
-                    Demo credentials are pre-filled: <span className="font-mono text-foreground">admin@procurio.app</span> /{' '}
-                    <span className="font-mono text-foreground">procurio123</span>
-                  </div>
-                </div>
               </>
             ) : (
               <>
