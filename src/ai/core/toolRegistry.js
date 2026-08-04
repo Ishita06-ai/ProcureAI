@@ -1,26 +1,30 @@
-// ToolRegistry — discovers every *.tool.js file in ../tools at first use and
-// exposes them by name. To add a new tool: drop a file in tools/ that default-
-// exports { name, description, execute() } — no other wiring is required.
+// ToolRegistry — exposes every tool by name for the planner and executor.
 //
-// Implementation note: the dynamic import below uses a template literal
-// (`../tools/${file}`). Webpack (which Next.js uses to bundle server code)
-// recognises this "partial dynamic import" pattern and bundles every file
-// under src/ai/tools/ automatically, so this works the same in `next dev`
-// and in a production build — it is not relying on filesystem access at
-// runtime for anything other than listing filenames.
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// Vercel/serverless-safe: every tool is STATICALLY imported at module load and
+// registered into an in-memory Map. There is no filesystem access — no
+// fs.readdirSync, no TOOLS_DIR, no import.meta.url path discovery. The old
+// dynamic directory scan broke on Vercel because src/ai/tools/*.tool.js is not
+// present as a real directory in the serverless bundle (webpack bakes the
+// build-machine path into import.meta.url), so getTool() returned null and the
+// executor recorded "Tool not registered" for every step.
+//
+// To add a new tool: drop a file in ../tools that default-exports
+// { name, description, execute() }, then add it to TOOL_MODULES below. No other
+// wiring is required.
+import analyticsTool from '../tools/analytics.tool.js';
+import inventoryTool from '../tools/inventory.tool.js';
+import notificationTool from '../tools/notification.tool.js';
+import poTool from '../tools/po.tool.js';
+import vendorTool from '../tools/vendor.tool.js';
 import { logger } from '../utils/logger.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const TOOLS_DIR = path.join(__dirname, '..', 'tools');
+// The complete, statically-known tool set. Order here is registration order.
+const TOOL_MODULES = [analyticsTool, inventoryTool, notificationTool, poTool, vendorTool];
 
 const registry = new Map();
 let loaded = false;
 
-function isValidTool(mod) {
-  const tool = mod?.default ?? mod;
+function isValidTool(tool) {
   return !!(
     tool &&
     typeof tool.name === 'string' &&
@@ -29,34 +33,35 @@ function isValidTool(mod) {
   );
 }
 
+// Register one tool module into the registry, preserving duplicate-name
+// detection (a later duplicate warns and overwrites, matching the old scan).
+function registerModule(mod) {
+  const tool = mod?.default ?? mod;
+  if (!isValidTool(tool)) {
+    logger.warn('toolRegistry.invalid_tool_skipped', { file: 'static import' });
+    return;
+  }
+  if (registry.has(tool.name)) {
+    logger.warn('toolRegistry.duplicate_tool_name', { name: tool.name, file: 'static import' });
+  }
+  registry.set(tool.name, tool);
+  logger.info('toolRegistry.tool_registered', { name: tool.name, file: 'static import' });
+}
+
+// Register every statically imported tool at module initialization — no
+// filesystem scan, so this behaves identically on localhost and Vercel.
+for (const mod of TOOL_MODULES) registerModule(mod);
+
+// Kept for API/behaviour compatibility: after _resetToolRegistry() clears the
+// Map, the next getTool()/getAllTools() call re-registers the static tool set.
 async function loadTools() {
   if (loaded) return;
   loaded = true;
-
-  let files = [];
-  try {
-    files = fs.readdirSync(TOOLS_DIR).filter((f) => f.endsWith('.tool.js'));
-  } catch (err) {
-    logger.error('toolRegistry.scan_failed', { dir: TOOLS_DIR, err: err.message });
-    return;
-  }
-
-  for (const file of files) {
-    try {
-      const mod = await import(`../tools/${file}`);
-      const tool = mod?.default ?? mod;
-      if (!isValidTool(tool)) {
-        logger.warn('toolRegistry.invalid_tool_skipped', { file });
-        continue;
-      }
-      if (registry.has(tool.name)) {
-        logger.warn('toolRegistry.duplicate_tool_name', { name: tool.name, file });
-      }
-      registry.set(tool.name, tool);
-      logger.info('toolRegistry.tool_registered', { name: tool.name, file });
-    } catch (err) {
-      logger.error('toolRegistry.load_failed', { file, err: err.message });
-    }
+  for (const mod of TOOL_MODULES) {
+    const tool = mod?.default ?? mod;
+    // Skip tools already present so the post-init first call is a no-op
+    // (avoids a spurious duplicate warning).
+    if (tool && typeof tool.name === 'string' && !registry.has(tool.name)) registerModule(mod);
   }
 }
 
@@ -66,7 +71,7 @@ export function registerTool(tool) {
   registry.set(tool.name, tool);
 }
 
-/** Get a single tool by name. Triggers discovery on first call. */
+/** Get a single tool by name. */
 export async function getTool(name) {
   await loadTools();
   return registry.get(name) || null;
@@ -78,8 +83,10 @@ export async function getAllTools() {
   return [...registry.values()];
 }
 
-/** Test/dev helper to force a re-scan (e.g. after adding a tool in a hot-reload session). */
+/** Test/dev helper to clear the registry; the static tools are re-registered on next use. */
 export function _resetToolRegistry() {
   registry.clear();
   loaded = false;
 }
+
+console.log('REGISTERED TOOLS =', [...registry.keys()]);
