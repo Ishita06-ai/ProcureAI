@@ -59,6 +59,7 @@ export const AiService = {
       };
     }
 
+    console.log('FINAL AI RESPONSE =', JSON.stringify({ content: result.content, usedFallback: result.usedFallback, provider: result.provider }));
     convo.messages.push({ role: 'assistant', content: result.content, citations: result.citations });
     if (convo.messages.length <= 2) convo.title = message.slice(0, 60);
     await convo.save();

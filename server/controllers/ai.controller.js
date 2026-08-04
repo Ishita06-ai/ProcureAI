@@ -12,6 +12,7 @@ export const AiController = {
     res.json(ok(out));
   }),
   chat: asyncHandler(async (req, res) => {
+    console.log('AI CHAT REQUEST =', JSON.stringify({ message: req.body?.message, userId: req.user?.id }));
     const out = await AiService.chat(req.body, req.user);
     await recordAudit({ req, action: 'ai.chat', resource: 'aiConversation', resourceId: out.conversationId });
     res.json(ok(out));

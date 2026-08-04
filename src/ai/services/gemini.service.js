@@ -20,6 +20,8 @@ import { logger } from '../utils/logger.js';
 export async function generateReply({ systemPrompt, messages }) {
   const provider = getAIProvider();
   try {
+    console.log('SYSTEM PROMPT =', systemPrompt);
+    console.log('MESSAGES =', JSON.stringify(messages, null, 2));
     const result = await provider.chat({ systemPrompt, messages });
     return {
       content: (result?.content || '').trim(),

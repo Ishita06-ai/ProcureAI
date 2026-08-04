@@ -39,6 +39,7 @@ export const ProductService = {
       Product.find(filter).sort(sort).skip(skip).limit(limit).lean(),
       Product.countDocuments(filter),
     ]);
+    console.log('PRODUCT QUERY =', JSON.stringify({ method: 'list', count: products.length, total }));
     let items = await attachStock(products);
     if (lowStock === 'true' || lowStock === true) items = items.filter(p => p.lowStock);
     return { items, total };
@@ -46,6 +47,7 @@ export const ProductService = {
 
   async get(id) {
     const p = await Product.findById(id).lean();
+    console.log('PRODUCT QUERY =', JSON.stringify({ method: 'get', count: p ? 1 : 0 }));
     if (!p) throw notFound('Product not found');
     const [enriched] = await attachStock([p]);
     const stockByWarehouse = await StockLevel.find({ productId: id }).lean();
@@ -55,11 +57,13 @@ export const ProductService = {
 
   async searchByName(term, limit = 10) {
     const products = await Product.find({ name: new RegExp(term, 'i') }).limit(limit).lean();
+    console.log('PRODUCT QUERY =', JSON.stringify({ method: 'searchByName', count: products.length }));
     return attachStock(products);
   },
 
   async searchBySku(term, limit = 10) {
     const products = await Product.find({ sku: new RegExp(String(term || '').toUpperCase(), 'i') }).limit(limit).lean();
+    console.log('PRODUCT QUERY =', JSON.stringify({ method: 'searchBySku', count: products.length }));
     return attachStock(products);
   },
 

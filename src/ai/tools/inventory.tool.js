@@ -77,6 +77,7 @@ function simplifyProduct(p) {
 async function handleLowStock(input) {
   const limit = input.limit ?? 20;
   const items = await StockService.lowStockReport();
+  console.log('LOW STOCK RESULT =', JSON.stringify(items, null, 2));
   return items.slice(0, limit).map((p) => ({
     id: p._id,
     sku: p.sku,
@@ -93,6 +94,7 @@ async function handleLowStock(input) {
 async function handleOutOfStock(input) {
   const limit = input.limit ?? 20;
   const items = await StockService.outOfStockReport();
+  console.log('OUT OF STOCK RESULT =', JSON.stringify(items, null, 2));
   return items.slice(0, limit).map((p) => ({
     id: p._id,
     sku: p.sku,
@@ -123,6 +125,7 @@ async function handleSearchBySku(input) {
 async function handleSummary() {
   const dashboard = await StockService.dashboard();
   console.log('DASHBOARD =', JSON.stringify(dashboard, null, 2));
+  console.log('SUMMARY RESULT =', JSON.stringify(dashboard, null, 2));
   return {
     kpis: dashboard.kpis,
     byCategory: dashboard.byCategory,
@@ -147,7 +150,9 @@ async function handleProductDetails(input) {
   }
   if (!productId) throw new Error('productId, sku, or name is required for product_details');
 
-  return ProductService.get(productId);
+  const product = await ProductService.get(productId);
+  console.log('PRODUCT RESULT =', JSON.stringify(product, null, 2));
+  return product;
 }
 
 const HANDLERS = {
@@ -177,6 +182,7 @@ export default {
    */
   async execute(input = {}) {
     const action = inferAction(input);
+    console.log('INVENTORY ACTION =', action);
     const handler = HANDLERS[action];
 
     if (!handler) {
