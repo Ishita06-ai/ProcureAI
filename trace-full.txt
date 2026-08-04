@@ -1,0 +1,127 @@
+======================================================================
+STAGE 0: connect to DB (real connectDB from server/config/db.js)
+======================================================================
+MONGO_URL = mongodb+srv://1ishitarander_db_user:i1d2r3123@cluster0.0k4km8r.mongodb.net/?appName=Cluster0
+DB_NAME = procureai
+(node:8396) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/isshi/ProcureAI/server/config/db.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to C:\Users\isshi\ProcureAI\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+mongoose.readyState = 1 (1 = connected)
+connected to db: procureai 
+
+======================================================================
+STAGE 1: planner.plan() + planner.hasIntent() + router.routeByKeywords()
+message: "Give me a procurement health snapshot."
+======================================================================
+plan() -> [
+  {
+    "tool": "analytics",
+    "input": {
+      "query": "Give me a procurement health snapshot."
+    }
+  },
+  {
+    "tool": "inventory",
+    "input": {
+      "query": "Give me a procurement health snapshot."
+    }
+  }
+]
+hasIntent() -> false
+routeByKeywords() -> null (null = no specialist via keywords)
+
+======================================================================
+STAGE 2: toolRegistry.getTool() for every planned tool
+======================================================================
+{"t":"2026-08-03T17:48:12.986Z","lvl":"info","msg":"toolRegistry.tool_registered","scope":"ai","name":"analytics","file":"analytics.tool.js"}
+{"t":"2026-08-03T17:48:12.999Z","lvl":"info","msg":"toolRegistry.tool_registered","scope":"ai","name":"inventory","file":"inventory.tool.js"}
+{"t":"2026-08-03T17:48:13.004Z","lvl":"info","msg":"toolRegistry.tool_registered","scope":"ai","name":"notification","file":"notification.tool.js"}
+{"t":"2026-08-03T17:48:13.027Z","lvl":"info","msg":"toolRegistry.tool_registered","scope":"ai","name":"po","file":"po.tool.js"}
+{"t":"2026-08-03T17:48:13.033Z","lvl":"info","msg":"toolRegistry.tool_registered","scope":"ai","name":"vendor","file":"vendor.tool.js"}
+getAllTools() -> [ 'analytics', 'inventory', 'notification', 'po', 'vendor' ] (5 registered)
+getTool('analytics') -> FOUND (analytics)
+getTool('inventory') -> FOUND (inventory)
+
+======================================================================
+STAGE 3: executor.execute() — real tool execution against real DB
+======================================================================
+{"t":"2026-08-03T17:48:13.620Z","lvl":"info","msg":"analytics.tool.executed","scope":"ai","action":"summary"}
+{"t":"2026-08-03T17:48:13.645Z","lvl":"info","msg":"inventory.tool.executed","scope":"ai","action":"summary"}
+
+--- tool=analytics description=Spend trend, spend by category/department, approval funnel, top vendors by spend, PR cycle times, and an overall procurement KPI summary. Read-only — fetches data, never generates text.
+  error: (none)
+  data keys: [ 'success', 'action', 'data' ]
+  data.success: true
+  data.action: summary
+  data.data: {"kpis":{"monthSpend":8900,"openPurchaseOrders":8,"deliveredPOs":2,"pendingApprovals":2,"approvedPRs":2,"openPRs":5,"vendorCount":8,"vendorsAtRisk":1},"spendTrend":[{"spend":84200,"orders":1,"month":"2026-2"},{"spend":12450,"orders":1,"month":"2026-3"},{"spend":47210,"orders":1,"month":"2026-4"},{"spend":9320,"orders":1,"month":"2026-5"},{"spend":94200,"orders":2,"month":"2026-6"},{"spend":102200,"orders":3,"month":"2026-7"},{"spend":8900,"orders":1,"month":"2026-8"}],"spendByCategory":[{"spend":842300,"vendors":1,"category":"Electronics"},{"spend":755200,"vendors":2,"category":"Logistics"},{"
+
+--- tool=inventory description=Inventory data: low-stock products, out-of-stock products, product search by name or SKU, inventory summary, and single-product details. Read-only — fetches data, never generates text.
+  error: (none)
+  data keys: [ 'success', 'action', 'data' ]
+  data.success: true
+  data.action: summary
+  data.data: {"kpis":{"totalValue":155024,"totalOnHand":22021,"productCount":10,"warehouseCount":3,"lowStockCount":1,"movementsToday":0},"byCategory":[{"name":"Electronics","value":79600,"onHand":43},{"name":"Raw Materials","value":34080,"onHand":4800},{"name":"Office Supplies","value":22982,"onHand":1240},{"name":"Machinery","value":13880,"onHand":38},{"name":"Packaging","value":4482,"onHand":15900}],"byWarehouse":[{"id":"4c2735f8-54cb-41b3-a107-329deef088f3","code":"HQ-MAIN","name":"HQ Main Warehouse","onHand":14831,"capacity":50000,"utilization":30},{"id":"c0257eca-0f79-438e-abc4-30fde87536e2","code":"E
+
+======================================================================
+STAGE 4: groundedOnly() — what the LLM would actually see
+======================================================================
+groundedOnly(toolResults).length = 2 (of 2)
+
+======================================================================
+STAGE 5: buildSupervisorPrompt() — the system prompt the generalist LLM receives
+======================================================================
+You are Procurio AI, the in-app intelligence agent for an enterprise procurement and inventory platform.
+You are concise, professional, and ground every claim in the TOOL_RESULTS provided below.
+When suggesting actions, be specific: cite PR/PO numbers, vendor names, SKUs, quantities, and amounts.
+Format:
+- Use short paragraphs and bullets.
+- Quote dollar amounts as $X,XXX.
+- If TOOL_RESULTS does not contain enough info to answer confidently, say so and suggest where the user can look.
+- Never invent numbers or vendor names not present in TOOL_RESULTS.
+Keep responses under 220 words unless the user explicitly asks for depth.
+
+TOOL_RESULTS (authoritative live data for this answer):
+# analytics — summary (Spend trend, spend by category/department, approval funnel, top vendors by spend, PR cycle times, and an overall procurement KPI summary. Read-only — fetches data, never generates text.)
+{
+...
+
+TOOL_RESULTS section ends with: "ames, SKUs, quantities, and amounts.\nFormat:\n- Use short paragraphs and bullets.\n- Quote dollar amounts as $X,XXX.\n- If "
+
+======================================================================
+STAGE 6: composeFallback() — generalist response if Gemini throws (429)
+======================================================================
+Here is what I see in your workspace right now:
+
+• Spend trend, spend by category/department, approval funnel, top vendors by spend, PR cycle times, and an overall procurement KPI summary. Read-only — fetches data, never generates text.: {"kpis":{"monthSpend":8900,"openPurchaseOrders":8,"deliveredPOs":2,"pendingApprovals":2,"approvedPRs":2,"openPRs":5,"vendorCount":8,"vendorsAtRisk":1},"spendTrend":[{"spend":84200,"orders":1,"month":"2026-2"},{"spend":12450,"orders":1,"month":"2026-3"},{"spend":47210,"orders":1,"month":"2026-4"},{"s
+
+• Inventory data: low-stock products, out-of-stock products, product search by name or SKU, inventory summary, and single-product details. Read-only — fetches data, never generates text.: {"kpis":{"totalValue":155024,"totalOnHand":22021,"productCount":10,"warehouseCount":3,"lowStockCount":1,"movementsToday":0},"byCategory":[{"name":"Electronics","value":79600,"onHand":43},{"name":"Raw Materials","value":34080,"onHand":4800},{"name":"Office Supplies","value":22982,"onHand":1240},{"nam
+
+_(Responded from live data — the AI model is currently unavailable, so this is the structured fallback.)_
+
+======================================================================
+STAGE 7: specialist path (runSpecialist) — for the specialist Gemini would route to
+======================================================================
+
+Specialist 'procurement-analyst' tools=[analytics,po]:
+  plan filtered to its tools -> [{"tool":"analytics","input":{"query":"Give me a procurement health snapshot."}}]
+  toolSteps actually executed -> ["analytics"]
+{"t":"2026-08-03T17:48:13.669Z","lvl":"info","msg":"analytics.tool.executed","scope":"ai","action":"summary"}
+  execute() grounded results: 1 of 1
+    tool=analytics | error: none | success: true | data: {"kpis":{"monthSpend":8900,"openPurchaseOrders":8,"deliveredPOs":2,"pendingApprovals":2,"approvedPRs":2,"openPRs":5,"vendorCount":8,"vendorsAtRisk":1},"spendTrend":[{"spend":84200,"orders":1,"month":"
+
+Specialist 'inventory-agent' tools=[inventory]:
+  plan filtered to its tools -> [{"tool":"inventory","input":{"query":"Give me a procurement health snapshot."}}]
+  toolSteps actually executed -> ["inventory"]
+{"t":"2026-08-03T17:48:13.771Z","lvl":"info","msg":"inventory.tool.executed","scope":"ai","action":"summary"}
+  execute() grounded results: 1 of 1
+    tool=inventory | error: none | success: true | data: {"kpis":{"totalValue":155024,"totalOnHand":22021,"productCount":10,"warehouseCount":3,"lowStockCount":1,"movementsToday":0},"byCategory":[{"name":"Electronics","value":79600,"onHand":43},{"name":"Raw 
+
+Specialist 'vendor-risk-agent' tools=[vendor,analytics]:
+  plan filtered to its tools -> [{"tool":"analytics","input":{"query":"Give me a procurement health snapshot."}}]
+  toolSteps actually executed -> ["analytics"]
+{"t":"2026-08-03T17:48:13.773Z","lvl":"info","msg":"analytics.tool.executed","scope":"ai","action":"summary"}
+  execute() grounded results: 1 of 1
+    tool=analytics | error: none | success: true | data: {"kpis":{"monthSpend":8900,"openPurchaseOrders":8,"deliveredPOs":2,"pendingApprovals":2,"approvedPRs":2,"openPRs":5,"vendorCount":8,"vendorsAtRisk":1},"spendTrend":[{"spend":84200,"orders":1,"month":"
+
+(If all tools show "Tool not registered" or success:false here, grounded is empty and the LLM receives: "No tool produced data for this question.")

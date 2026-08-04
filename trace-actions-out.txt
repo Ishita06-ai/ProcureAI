@@ -1,0 +1,59 @@
+[inventory.summary] success=true error=(none)
+  keys=kpis,byCategory,byWarehouse,lowStockTopN
+  data={"kpis":{"totalValue":155024,"totalOnHand":22021,"productCount":10,"warehouseCount":3,"lowStockCount":1,"movementsToday":0},"byCategory":[{"name":"Electronics","value":79600,"onHand":43},{"name":"Raw Materials","value":3
+
+[inventory.low_stock] success=true error=(none)
+  keys=0
+  data=[{"id":"f0938546-94ee-4306-8e64-e7c6a867d9ee","sku":"COMP-HV-C","name":"HVAC Compressor Unit C","category":"Machinery","available":2,"reorderLevel":2,"deficit":0,"leadTimeDays":14,"defaultVendor":"Lumen Industrial"}]
+
+[inventory.out_of_stock] success=true error=(none)
+  keys=
+  data=[]
+
+[inventory.search_by_name] success=true error=(none)
+  keys=0,1,2,3,4,5,6,7,8,9
+  data=[{"id":"767fc49f-c27e-4bc9-ab57-bde7293c5204","sku":"ALU-6061","name":"Aluminum 6061-T6 Ingot","category":"Raw Materials","unit":"kg","unitPrice":8.4,"onHand":4800,"available":4800,"reorderLevel":800,"lowStock":false,"ou
+
+[inventory.search_by_sku] success=true error=(none)
+  keys=0,1,2,3
+  data=[{"id":"767fc49f-c27e-4bc9-ab57-bde7293c5204","sku":"ALU-6061","name":"Aluminum 6061-T6 Ingot","category":"Raw Materials","unit":"kg","unitPrice":8.4,"onHand":4800,"available":4800,"reorderLevel":800,"lowStock":false,"ou
+
+[inventory.product_details] success=true error=(none)
+  keys=kpis,byCategory,byWarehouse,lowStockTopN
+  data={"kpis":{"totalValue":155024,"totalOnHand":22021,"productCount":10,"warehouseCount":3,"lowStockCount":1,"movementsToday":0},"byCategory":[{"name":"Electronics","value":79600,"onHand":43},{"name":"Raw Materials","value":3
+
+[analytics.summary] success=true error=(none)
+  keys=kpis,spendTrend,spendByCategory,spendByDepartment,approvalFunnel,topVendorsBySpend
+  data={"kpis":{"monthSpend":8900,"openPurchaseOrders":8,"deliveredPOs":2,"pendingApprovals":2,"approvedPRs":2,"openPRs":5,"vendorCount":8,"vendorsAtRisk":1},"spendTrend":[{"spend":84200,"orders":1,"month":"2026-2"},{"spend":12
+
+[analytics.spend_trend] success=true error=(none)
+  keys=0,1,2,3,4,5,6
+  data=[{"spend":84200,"orders":1,"month":"2026-2"},{"spend":12450,"orders":1,"month":"2026-3"},{"spend":47210,"orders":1,"month":"2026-4"},{"spend":9320,"orders":1,"month":"2026-5"},{"spend":94200,"orders":2,"month":"2026-6"},
+
+[analytics.spend_by_category] success=true error=(none)
+  keys=0,1,2,3,4,5,6
+  data=[{"spend":842300,"vendors":1,"category":"Electronics"},{"spend":755200,"vendors":2,"category":"Logistics"},{"spend":528900,"vendors":1,"category":"Raw Materials"},{"spend":318200,"vendors":1,"category":"Packaging"},{"spe
+
+[analytics.spend_by_department] success=true error=(none)
+  keys=0,1
+  data=[{"spend":35280,"count":1,"department":"Manufacturing"},{"spend":11750,"count":1,"department":"Marketing"}]
+
+[analytics.approval_funnel] success=true error=(none)
+  keys=0,1,2,3,4
+  data=[{"stage":"Draft","count":1},{"stage":"Submitted","count":1},{"stage":"UnderReview","count":1},{"stage":"Approved","count":2},{"stage":"Rejected","count":1}]
+
+[analytics.top_vendors_by_spend] success=true error=(none)
+  keys=0,1,2,3,4,5,6,7
+  data=[{"_id":"7a8afbfe-6a9b-4818-9c9b-bf279c0c35e6","name":"Apex Components Ltd.","category":"Electronics","risk":"low","score":96,"spend":842300},{"_id":"29d082d3-a195-4a7e-b29c-c5d5eda7a666","name":"Northwind Logistics","ca
+
+[analytics.cycle_times] success=true error=(none)
+  keys=0,1
+  data=[{"department":"Marketing","avgHours":30,"count":1},{"department":"Manufacturing","avgHours":30,"count":1}]
+
+[po.summary] success=true error=(none)
+  keys=0,1,2,3,4,5,6,7
+  data=[{"id":"b7f9a34e-5733-4146-9010-04b214bd0e45","number":"PO-10302","vendor":"Orbita Freight","owner":"Alex Müller","status":"Pending","deliveryStatus":"NotShipped","amount":8900,"currency":"USD","eta":"—","createdAt":"202
+
+[vendor.summary] success=true error=(none)
+  keys=topVendors,riskyVendors,byCategory
+  data={"topVendors":[{"id":"7a8afbfe-6a9b-4818-9c9b-bf279c0c35e6","name":"Apex Components Ltd.","category":"Electronics","country":"Germany","status":"Preferred","risk":"low","score":96,"spend":842300},{"id":"29d082d3-a195-4a7
