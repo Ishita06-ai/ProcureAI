@@ -1,0 +1,1530 @@
+======================================================================
+STAGE 0: connect to DB (real connectDB from server/config/db.js)
+======================================================================
+MONGO_URL = mongodb+srv://1ishitarander_db_user:i1d2r3123@cluster0.0k4km8r.mongodb.net/?appName=Cluster0
+DB_NAME = procureai
+(node:23840) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/isshi/ProcureAI/server/config/db.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to C:\Users\isshi\ProcureAI\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Connected DB = procureai
+Mongo URI = mongodb+srv://1ishitarander_db_user:i1d2r3123@cluster0.0k4km8r.mongodb.net/?appName=Cluster0
+DB_NAME = procureai
+mongoose.readyState = 1 (1 = connected)
+connected to db: procureai 
+
+======================================================================
+STAGE 1: planner.plan() + planner.hasIntent() + router.routeByKeywords()
+message: "Give me a procurement health snapshot."
+======================================================================
+PLAN = [
+  {
+    "tool": "analytics",
+    "input": {
+      "query": "Give me a procurement health snapshot."
+    }
+  },
+  {
+    "tool": "inventory",
+    "input": {
+      "query": "Give me a procurement health snapshot."
+    }
+  }
+]
+plan() -> [
+  {
+    "tool": "analytics",
+    "input": {
+      "query": "Give me a procurement health snapshot."
+    }
+  },
+  {
+    "tool": "inventory",
+    "input": {
+      "query": "Give me a procurement health snapshot."
+    }
+  }
+]
+hasIntent() -> false
+routeByKeywords() -> null (null = no specialist via keywords)
+
+======================================================================
+STAGE 2: toolRegistry.getTool() for every planned tool
+======================================================================
+{"t":"2026-08-04T07:23:02.405Z","lvl":"info","msg":"toolRegistry.tool_registered","scope":"ai","name":"analytics","file":"analytics.tool.js"}
+{"t":"2026-08-04T07:23:02.435Z","lvl":"info","msg":"toolRegistry.tool_registered","scope":"ai","name":"inventory","file":"inventory.tool.js"}
+{"t":"2026-08-04T07:23:02.455Z","lvl":"info","msg":"toolRegistry.tool_registered","scope":"ai","name":"notification","file":"notification.tool.js"}
+{"t":"2026-08-04T07:23:02.516Z","lvl":"info","msg":"toolRegistry.tool_registered","scope":"ai","name":"po","file":"po.tool.js"}
+{"t":"2026-08-04T07:23:02.534Z","lvl":"info","msg":"toolRegistry.tool_registered","scope":"ai","name":"vendor","file":"vendor.tool.js"}
+getAllTools() -> [ 'analytics', 'inventory', 'notification', 'po', 'vendor' ] (5 registered)
+getTool('analytics') -> FOUND (analytics)
+getTool('inventory') -> FOUND (inventory)
+
+======================================================================
+STAGE 3: executor.execute() — real tool execution against real DB
+======================================================================
+STOCK DASHBOARD = {
+  "kpis": {
+    "totalValue": 155024,
+    "totalOnHand": 22021,
+    "productCount": 10,
+    "warehouseCount": 3,
+    "lowStockCount": 1,
+    "movementsToday": 0
+  },
+  "byCategory": [
+    {
+      "name": "Electronics",
+      "value": 79600,
+      "onHand": 43
+    },
+    {
+      "name": "Raw Materials",
+      "value": 34080,
+      "onHand": 4800
+    },
+    {
+      "name": "Office Supplies",
+      "value": 22982,
+      "onHand": 1240
+    },
+    {
+      "name": "Machinery",
+      "value": 13880,
+      "onHand": 38
+    },
+    {
+      "name": "Packaging",
+      "value": 4482,
+      "onHand": 15900
+    }
+  ],
+  "byWarehouse": [
+    {
+      "id": "4c2735f8-54cb-41b3-a107-329deef088f3",
+      "code": "HQ-MAIN",
+      "name": "HQ Main Warehouse",
+      "onHand": 14831,
+      "capacity": 50000,
+      "utilization": 30
+    },
+    {
+      "id": "c0257eca-0f79-438e-abc4-30fde87536e2",
+      "code": "EU-FRA",
+      "name": "Frankfurt Distribution",
+      "onHand": 5487,
+      "capacity": 30000,
+      "utilization": 18
+    },
+    {
+      "id": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "code": "US-WEST",
+      "name": "US West Coast Hub",
+      "onHand": 1703,
+      "capacity": 40000,
+      "utilization": 4
+    }
+  ],
+  "lowStock": [
+    {
+      "_id": "f0938546-94ee-4306-8e64-e7c6a867d9ee",
+      "sku": "COMP-HV-C",
+      "name": "HVAC Compressor Unit C",
+      "category": "Machinery",
+      "unit": "pcs",
+      "unitCost": 3700,
+      "unitPrice": 4200,
+      "reorderLevel": 2,
+      "safetyStock": 4,
+      "leadTimeDays": 14,
+      "expiryTrackable": false,
+      "batchTrackable": false,
+      "defaultVendorId": "f9c1b66f-df48-4624-b4b4-b323556eb410",
+      "defaultVendorName": "Lumen Industrial",
+      "tags": [],
+      "status": "active",
+      "createdAt": "2026-08-03T16:00:12.967Z",
+      "updatedAt": "2026-08-03T16:00:12.967Z",
+      "onHand": 2,
+      "available": 2,
+      "deficit": 0
+    }
+  ]
+}
+DASHBOARD = {
+  "kpis": {
+    "totalValue": 155024,
+    "totalOnHand": 22021,
+    "productCount": 10,
+    "warehouseCount": 3,
+    "lowStockCount": 1,
+    "movementsToday": 0
+  },
+  "byCategory": [
+    {
+      "name": "Electronics",
+      "value": 79600,
+      "onHand": 43
+    },
+    {
+      "name": "Raw Materials",
+      "value": 34080,
+      "onHand": 4800
+    },
+    {
+      "name": "Office Supplies",
+      "value": 22982,
+      "onHand": 1240
+    },
+    {
+      "name": "Machinery",
+      "value": 13880,
+      "onHand": 38
+    },
+    {
+      "name": "Packaging",
+      "value": 4482,
+      "onHand": 15900
+    }
+  ],
+  "byWarehouse": [
+    {
+      "id": "4c2735f8-54cb-41b3-a107-329deef088f3",
+      "code": "HQ-MAIN",
+      "name": "HQ Main Warehouse",
+      "onHand": 14831,
+      "capacity": 50000,
+      "utilization": 30
+    },
+    {
+      "id": "c0257eca-0f79-438e-abc4-30fde87536e2",
+      "code": "EU-FRA",
+      "name": "Frankfurt Distribution",
+      "onHand": 5487,
+      "capacity": 30000,
+      "utilization": 18
+    },
+    {
+      "id": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "code": "US-WEST",
+      "name": "US West Coast Hub",
+      "onHand": 1703,
+      "capacity": 40000,
+      "utilization": 4
+    }
+  ],
+  "recentMovements": [
+    {
+      "_id": "ef4774bf-9163-43cb-9208-16509828d518",
+      "productId": "8cb2502d-6392-4236-bddd-52fa18e9258e",
+      "productSku": "NB-HC-BR",
+      "productName": "Hardcover Notebook, Branded",
+      "warehouseId": "4c2735f8-54cb-41b3-a107-329deef088f3",
+      "warehouseCode": "HQ-MAIN",
+      "type": "IN",
+      "qty": 250,
+      "unitCost": 7.2,
+      "refType": "GRN",
+      "refId": "f398e56f-57a8-4308-a4fb-f4801a1ca7d6",
+      "refNumber": "GRN-50231",
+      "reason": "Receipt against PO-10298",
+      "actorName": "Lena Okafor",
+      "at": "2026-07-29T16:00:13.174Z"
+    },
+    {
+      "_id": "7fdd30d7-b1d3-43fa-a8da-79901e3b4b46",
+      "productId": "c5811156-3f67-47e4-bf06-f92ad763870b",
+      "productSku": "HOOD-EMB",
+      "productName": "Heavyweight Hoodie, Embroidered",
+      "warehouseId": "4c2735f8-54cb-41b3-a107-329deef088f3",
+      "warehouseCode": "HQ-MAIN",
+      "type": "IN",
+      "qty": 250,
+      "unitCost": 32,
+      "refType": "GRN",
+      "refId": "f398e56f-57a8-4308-a4fb-f4801a1ca7d6",
+      "refNumber": "GRN-50231",
+      "reason": "Receipt against PO-10298",
+      "actorName": "Lena Okafor",
+      "at": "2026-07-29T16:00:13.174Z"
+    },
+    {
+      "_id": "00357865-f8b5-4797-8180-da88ba84e336",
+      "productId": "5195341c-1c5a-452f-b668-ca3348a643f2",
+      "productSku": "PTZ-CAM-1",
+      "productName": "PTZ Conference Camera Pro",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 2,
+      "unitCost": 1480,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    },
+    {
+      "_id": "9b82f203-c0cb-43a1-a483-83cfc2aafd16",
+      "productId": "8cb2502d-6392-4236-bddd-52fa18e9258e",
+      "productSku": "NB-HC-BR",
+      "productName": "Hardcover Notebook, Branded",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 40,
+      "unitCost": 7.2,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    },
+    {
+      "_id": "7a90e191-cc02-46d4-8611-663e9a022815",
+      "productId": "767fc49f-c27e-4bc9-ab57-bde7293c5204",
+      "productSku": "ALU-6061",
+      "productName": "Aluminum 6061-T6 Ingot",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 1600,
+      "unitCost": 7.1,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    },
+    {
+      "_id": "f7e0e8dc-a70a-4abb-afa2-8061bd57e13a",
+      "productId": "f0938546-94ee-4306-8e64-e7c6a867d9ee",
+      "productSku": "COMP-HV-C",
+      "productName": "HVAC Compressor Unit C",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 1,
+      "unitCost": 3700,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    },
+    {
+      "_id": "8daa941c-32eb-4dc0-ab4e-ada191a26d11",
+      "productId": "6cc9d10b-1887-4ade-a1bd-4d8bd398e5a3",
+      "productSku": "MBP-14-M4",
+      "productName": "MacBook Pro 14\" M4",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 4,
+      "unitCost": 2050,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    },
+    {
+      "_id": "cec942ac-e5b7-43c9-b70a-b7b8fca5526c",
+      "productId": "182605b3-da0e-44a3-9bb6-2e64dcd2be79",
+      "productSku": "PAPER-A4-X",
+      "productName": "Premium A4 Paper 80gsm",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 20,
+      "unitCost": 4.2,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    }
+  ],
+  "lowStock": [
+    {
+      "_id": "f0938546-94ee-4306-8e64-e7c6a867d9ee",
+      "sku": "COMP-HV-C",
+      "name": "HVAC Compressor Unit C",
+      "category": "Machinery",
+      "unit": "pcs",
+      "unitCost": 3700,
+      "unitPrice": 4200,
+      "reorderLevel": 2,
+      "safetyStock": 4,
+      "leadTimeDays": 14,
+      "expiryTrackable": false,
+      "batchTrackable": false,
+      "defaultVendorId": "f9c1b66f-df48-4624-b4b4-b323556eb410",
+      "defaultVendorName": "Lumen Industrial",
+      "tags": [],
+      "status": "active",
+      "createdAt": "2026-08-03T16:00:12.967Z",
+      "updatedAt": "2026-08-03T16:00:12.967Z",
+      "onHand": 2,
+      "available": 2,
+      "deficit": 0
+    }
+  ]
+}
+{"t":"2026-08-04T07:23:03.774Z","lvl":"info","msg":"inventory.tool.executed","scope":"ai","action":"summary"}
+{"t":"2026-08-04T07:23:03.777Z","lvl":"info","msg":"analytics.tool.executed","scope":"ai","action":"summary"}
+TOOL RESULTS = [
+  {
+    "tool": "analytics",
+    "description": "Spend trend, spend by category/department, approval funnel, top vendors by spend, PR cycle times, and an overall procurement KPI summary. Read-only — fetches data, never generates text.",
+    "data": {
+      "success": true,
+      "action": "summary",
+      "data": {
+        "kpis": {
+          "monthSpend": 8900,
+          "openPurchaseOrders": 8,
+          "deliveredPOs": 2,
+          "pendingApprovals": 2,
+          "approvedPRs": 2,
+          "openPRs": 5,
+          "vendorCount": 8,
+          "vendorsAtRisk": 1
+        },
+        "spendTrend": [
+          {
+            "spend": 84200,
+            "orders": 1,
+            "month": "2026-2"
+          },
+          {
+            "spend": 12450,
+            "orders": 1,
+            "month": "2026-3"
+          },
+          {
+            "spend": 47210,
+            "orders": 1,
+            "month": "2026-4"
+          },
+          {
+            "spend": 9320,
+            "orders": 1,
+            "month": "2026-5"
+          },
+          {
+            "spend": 94200,
+            "orders": 2,
+            "month": "2026-6"
+          },
+          {
+            "spend": 102200,
+            "orders": 3,
+            "month": "2026-7"
+          },
+          {
+            "spend": 8900,
+            "orders": 1,
+            "month": "2026-8"
+          }
+        ],
+        "spendByCategory": [
+          {
+            "spend": 842300,
+            "vendors": 1,
+            "category": "Electronics"
+          },
+          {
+            "spend": 755200,
+            "vendors": 2,
+            "category": "Logistics"
+          },
+          {
+            "spend": 528900,
+            "vendors": 1,
+            "category": "Raw Materials"
+          },
+          {
+            "spend": 318200,
+            "vendors": 1,
+            "category": "Packaging"
+          },
+          {
+            "spend": 296700,
+            "vendors": 1,
+            "category": "IT Services"
+          },
+          {
+            "spend": 184300,
+            "vendors": 1,
+            "category": "Office Supplies"
+          },
+          {
+            "spend": 121500,
+            "vendors": 1,
+            "category": "Machinery"
+          }
+        ],
+        "spendByDepartment": [
+          {
+            "spend": 35280,
+            "count": 1,
+            "department": "Manufacturing"
+          },
+          {
+            "spend": 11750,
+            "count": 1,
+            "department": "Marketing"
+          }
+        ],
+        "approvalFunnel": [
+          {
+            "stage": "Draft",
+            "count": 1
+          },
+          {
+            "stage": "Submitted",
+            "count": 1
+          },
+          {
+            "stage": "UnderReview",
+            "count": 1
+          },
+          {
+            "stage": "Approved",
+            "count": 2
+          },
+          {
+            "stage": "Rejected",
+            "count": 1
+          }
+        ],
+        "topVendorsBySpend": [
+          {
+            "_id": "7a8afbfe-6a9b-4818-9c9b-bf279c0c35e6",
+            "name": "Apex Components Ltd.",
+            "category": "Electronics",
+            "risk": "low",
+            "score": 96,
+            "spend": 842300
+          },
+          {
+            "_id": "29d082d3-a195-4a7e-b29c-c5d5eda7a666",
+            "name": "Northwind Logistics",
+            "category": "Logistics",
+            "risk": "low",
+            "score": 91,
+            "spend": 612400
+          },
+          {
+            "_id": "dcad4db6-0c4d-4f0c-b76c-d72ac457179f",
+            "name": "Helix Materials Co.",
+            "category": "Raw Materials",
+            "risk": "medium",
+            "score": 87,
+            "spend": 528900
+          },
+          {
+            "_id": "d7f176c6-9737-4420-9428-bbc724a165a8",
+            "name": "Kairo Print Works",
+            "category": "Packaging",
+            "risk": "low",
+            "score": 82,
+            "spend": 318200
+          },
+          {
+            "_id": "50ed9a80-c540-4a21-9a74-0e418c50b5fc",
+            "name": "Solace Cloud Services",
+            "category": "IT Services",
+            "risk": "medium",
+            "score": 78,
+            "spend": 296700
+          },
+          {
+            "_id": "971d9961-52cc-48eb-91c6-c35850db057f",
+            "name": "Bramble & Co.",
+            "category": "Office Supplies",
+            "risk": "low",
+            "score": 72,
+            "spend": 184300
+          },
+          {
+            "_id": "f8948e88-5980-4868-a205-9076258d310c",
+            "name": "Orbita Freight",
+            "category": "Logistics",
+            "risk": "high",
+            "score": 64,
+            "spend": 142800
+          },
+          {
+            "_id": "f9c1b66f-df48-4624-b4b4-b323556eb410",
+            "name": "Lumen Industrial",
+            "category": "Machinery",
+            "risk": "low",
+            "score": 89,
+            "spend": 121500
+          }
+        ]
+      }
+    }
+  },
+  {
+    "tool": "inventory",
+    "description": "Inventory data: low-stock products, out-of-stock products, product search by name or SKU, inventory summary, and single-product details. Read-only — fetches data, never generates text.",
+    "data": {
+      "success": true,
+      "action": "summary",
+      "data": {
+        "kpis": {
+          "totalValue": 155024,
+          "totalOnHand": 22021,
+          "productCount": 10,
+          "warehouseCount": 3,
+          "lowStockCount": 1,
+          "movementsToday": 0
+        },
+        "byCategory": [
+          {
+            "name": "Electronics",
+            "value": 79600,
+            "onHand": 43
+          },
+          {
+            "name": "Raw Materials",
+            "value": 34080,
+            "onHand": 4800
+          },
+          {
+            "name": "Office Supplies",
+            "value": 22982,
+            "onHand": 1240
+          },
+          {
+            "name": "Machinery",
+            "value": 13880,
+            "onHand": 38
+          },
+          {
+            "name": "Packaging",
+            "value": 4482,
+            "onHand": 15900
+          }
+        ],
+        "byWarehouse": [
+          {
+            "id": "4c2735f8-54cb-41b3-a107-329deef088f3",
+            "code": "HQ-MAIN",
+            "name": "HQ Main Warehouse",
+            "onHand": 14831,
+            "capacity": 50000,
+            "utilization": 30
+          },
+          {
+            "id": "c0257eca-0f79-438e-abc4-30fde87536e2",
+            "code": "EU-FRA",
+            "name": "Frankfurt Distribution",
+            "onHand": 5487,
+            "capacity": 30000,
+            "utilization": 18
+          },
+          {
+            "id": "407baeb7-793b-494f-a994-df81d2a86edb",
+            "code": "US-WEST",
+            "name": "US West Coast Hub",
+            "onHand": 1703,
+            "capacity": 40000,
+            "utilization": 4
+          }
+        ],
+        "lowStockTopN": [
+          {
+            "_id": "f0938546-94ee-4306-8e64-e7c6a867d9ee",
+            "sku": "COMP-HV-C",
+            "name": "HVAC Compressor Unit C",
+            "category": "Machinery",
+            "unit": "pcs",
+            "unitCost": 3700,
+            "unitPrice": 4200,
+            "reorderLevel": 2,
+            "safetyStock": 4,
+            "leadTimeDays": 14,
+            "expiryTrackable": false,
+            "batchTrackable": false,
+            "defaultVendorId": "f9c1b66f-df48-4624-b4b4-b323556eb410",
+            "defaultVendorName": "Lumen Industrial",
+            "tags": [],
+            "status": "active",
+            "createdAt": "2026-08-03T16:00:12.967Z",
+            "updatedAt": "2026-08-03T16:00:12.967Z",
+            "onHand": 2,
+            "available": 2,
+            "deficit": 0
+          }
+        ]
+      }
+    }
+  }
+]
+
+--- tool=analytics description=Spend trend, spend by category/department, approval funnel, top vendors by spend, PR cycle times, and an overall procurement KPI summary. Read-only — fetches data, never generates text.
+  error: (none)
+  data keys: [ 'success', 'action', 'data' ]
+  data.success: true
+  data.action: summary
+  data.data: {"kpis":{"monthSpend":8900,"openPurchaseOrders":8,"deliveredPOs":2,"pendingApprovals":2,"approvedPRs":2,"openPRs":5,"vendorCount":8,"vendorsAtRisk":1},"spendTrend":[{"spend":84200,"orders":1,"month":"2026-2"},{"spend":12450,"orders":1,"month":"2026-3"},{"spend":47210,"orders":1,"month":"2026-4"},{"spend":9320,"orders":1,"month":"2026-5"},{"spend":94200,"orders":2,"month":"2026-6"},{"spend":102200,"orders":3,"month":"2026-7"},{"spend":8900,"orders":1,"month":"2026-8"}],"spendByCategory":[{"spend":842300,"vendors":1,"category":"Electronics"},{"spend":755200,"vendors":2,"category":"Logistics"},{"
+
+--- tool=inventory description=Inventory data: low-stock products, out-of-stock products, product search by name or SKU, inventory summary, and single-product details. Read-only — fetches data, never generates text.
+  error: (none)
+  data keys: [ 'success', 'action', 'data' ]
+  data.success: true
+  data.action: summary
+  data.data: {"kpis":{"totalValue":155024,"totalOnHand":22021,"productCount":10,"warehouseCount":3,"lowStockCount":1,"movementsToday":0},"byCategory":[{"name":"Electronics","value":79600,"onHand":43},{"name":"Raw Materials","value":34080,"onHand":4800},{"name":"Office Supplies","value":22982,"onHand":1240},{"name":"Machinery","value":13880,"onHand":38},{"name":"Packaging","value":4482,"onHand":15900}],"byWarehouse":[{"id":"4c2735f8-54cb-41b3-a107-329deef088f3","code":"HQ-MAIN","name":"HQ Main Warehouse","onHand":14831,"capacity":50000,"utilization":30},{"id":"c0257eca-0f79-438e-abc4-30fde87536e2","code":"E
+
+======================================================================
+STAGE 4: groundedOnly() — what the LLM would actually see
+======================================================================
+groundedOnly(toolResults).length = 2 (of 2)
+
+======================================================================
+STAGE 5: buildSupervisorPrompt() — the system prompt the generalist LLM receives
+======================================================================
+You are Procurio AI, the in-app intelligence agent for an enterprise procurement and inventory platform.
+You are concise, professional, and ground every claim in the TOOL_RESULTS provided below.
+When suggesting actions, be specific: cite PR/PO numbers, vendor names, SKUs, quantities, and amounts.
+Format:
+- Use short paragraphs and bullets.
+- Quote dollar amounts as $X,XXX.
+- If TOOL_RESULTS does not contain enough info to answer confidently, say so and suggest where the user can look.
+- Never invent numbers or vendor names not present in TOOL_RESULTS.
+Keep responses under 220 words unless the user explicitly asks for depth.
+
+TOOL_RESULTS (authoritative live data for this answer):
+# analytics — summary (Spend trend, spend by category/department, approval funnel, top vendors by spend, PR cycle times, and an overall procurement KPI summary. Read-only — fetches data, never generates text.)
+{
+...
+
+TOOL_RESULTS section ends with: "ames, SKUs, quantities, and amounts.\nFormat:\n- Use short paragraphs and bullets.\n- Quote dollar amounts as $X,XXX.\n- If "
+
+======================================================================
+STAGE 6: composeFallback() — generalist response if Gemini throws (429)
+======================================================================
+Here is what I see in your workspace right now:
+
+• Spend trend, spend by category/department, approval funnel, top vendors by spend, PR cycle times, and an overall procurement KPI summary. Read-only — fetches data, never generates text.: {"kpis":{"monthSpend":8900,"openPurchaseOrders":8,"deliveredPOs":2,"pendingApprovals":2,"approvedPRs":2,"openPRs":5,"vendorCount":8,"vendorsAtRisk":1},"spendTrend":[{"spend":84200,"orders":1,"month":"2026-2"},{"spend":12450,"orders":1,"month":"2026-3"},{"spend":47210,"orders":1,"month":"2026-4"},{"s
+
+• Inventory data: low-stock products, out-of-stock products, product search by name or SKU, inventory summary, and single-product details. Read-only — fetches data, never generates text.: {"kpis":{"totalValue":155024,"totalOnHand":22021,"productCount":10,"warehouseCount":3,"lowStockCount":1,"movementsToday":0},"byCategory":[{"name":"Electronics","value":79600,"onHand":43},{"name":"Raw Materials","value":34080,"onHand":4800},{"name":"Office Supplies","value":22982,"onHand":1240},{"nam
+
+_(Responded from live data — the AI model is currently unavailable, so this is the structured fallback.)_
+
+======================================================================
+STAGE 7: specialist path (runSpecialist) — for the specialist Gemini would route to
+======================================================================
+
+Specialist 'procurement-analyst' tools=[analytics,po]:
+  plan filtered to its tools -> [{"tool":"analytics","input":{"query":"Give me a procurement health snapshot."}}]
+  toolSteps actually executed -> ["analytics"]
+{"t":"2026-08-04T07:23:03.849Z","lvl":"info","msg":"analytics.tool.executed","scope":"ai","action":"summary"}
+TOOL RESULTS = [
+  {
+    "tool": "analytics",
+    "description": "Spend trend, spend by category/department, approval funnel, top vendors by spend, PR cycle times, and an overall procurement KPI summary. Read-only — fetches data, never generates text.",
+    "data": {
+      "success": true,
+      "action": "summary",
+      "data": {
+        "kpis": {
+          "monthSpend": 8900,
+          "openPurchaseOrders": 8,
+          "deliveredPOs": 2,
+          "pendingApprovals": 2,
+          "approvedPRs": 2,
+          "openPRs": 5,
+          "vendorCount": 8,
+          "vendorsAtRisk": 1
+        },
+        "spendTrend": [
+          {
+            "spend": 84200,
+            "orders": 1,
+            "month": "2026-2"
+          },
+          {
+            "spend": 12450,
+            "orders": 1,
+            "month": "2026-3"
+          },
+          {
+            "spend": 47210,
+            "orders": 1,
+            "month": "2026-4"
+          },
+          {
+            "spend": 9320,
+            "orders": 1,
+            "month": "2026-5"
+          },
+          {
+            "spend": 94200,
+            "orders": 2,
+            "month": "2026-6"
+          },
+          {
+            "spend": 102200,
+            "orders": 3,
+            "month": "2026-7"
+          },
+          {
+            "spend": 8900,
+            "orders": 1,
+            "month": "2026-8"
+          }
+        ],
+        "spendByCategory": [
+          {
+            "spend": 842300,
+            "vendors": 1,
+            "category": "Electronics"
+          },
+          {
+            "spend": 755200,
+            "vendors": 2,
+            "category": "Logistics"
+          },
+          {
+            "spend": 528900,
+            "vendors": 1,
+            "category": "Raw Materials"
+          },
+          {
+            "spend": 318200,
+            "vendors": 1,
+            "category": "Packaging"
+          },
+          {
+            "spend": 296700,
+            "vendors": 1,
+            "category": "IT Services"
+          },
+          {
+            "spend": 184300,
+            "vendors": 1,
+            "category": "Office Supplies"
+          },
+          {
+            "spend": 121500,
+            "vendors": 1,
+            "category": "Machinery"
+          }
+        ],
+        "spendByDepartment": [
+          {
+            "spend": 35280,
+            "count": 1,
+            "department": "Manufacturing"
+          },
+          {
+            "spend": 11750,
+            "count": 1,
+            "department": "Marketing"
+          }
+        ],
+        "approvalFunnel": [
+          {
+            "stage": "Draft",
+            "count": 1
+          },
+          {
+            "stage": "Submitted",
+            "count": 1
+          },
+          {
+            "stage": "UnderReview",
+            "count": 1
+          },
+          {
+            "stage": "Approved",
+            "count": 2
+          },
+          {
+            "stage": "Rejected",
+            "count": 1
+          }
+        ],
+        "topVendorsBySpend": [
+          {
+            "_id": "7a8afbfe-6a9b-4818-9c9b-bf279c0c35e6",
+            "name": "Apex Components Ltd.",
+            "category": "Electronics",
+            "risk": "low",
+            "score": 96,
+            "spend": 842300
+          },
+          {
+            "_id": "29d082d3-a195-4a7e-b29c-c5d5eda7a666",
+            "name": "Northwind Logistics",
+            "category": "Logistics",
+            "risk": "low",
+            "score": 91,
+            "spend": 612400
+          },
+          {
+            "_id": "dcad4db6-0c4d-4f0c-b76c-d72ac457179f",
+            "name": "Helix Materials Co.",
+            "category": "Raw Materials",
+            "risk": "medium",
+            "score": 87,
+            "spend": 528900
+          },
+          {
+            "_id": "d7f176c6-9737-4420-9428-bbc724a165a8",
+            "name": "Kairo Print Works",
+            "category": "Packaging",
+            "risk": "low",
+            "score": 82,
+            "spend": 318200
+          },
+          {
+            "_id": "50ed9a80-c540-4a21-9a74-0e418c50b5fc",
+            "name": "Solace Cloud Services",
+            "category": "IT Services",
+            "risk": "medium",
+            "score": 78,
+            "spend": 296700
+          },
+          {
+            "_id": "971d9961-52cc-48eb-91c6-c35850db057f",
+            "name": "Bramble & Co.",
+            "category": "Office Supplies",
+            "risk": "low",
+            "score": 72,
+            "spend": 184300
+          },
+          {
+            "_id": "f8948e88-5980-4868-a205-9076258d310c",
+            "name": "Orbita Freight",
+            "category": "Logistics",
+            "risk": "high",
+            "score": 64,
+            "spend": 142800
+          },
+          {
+            "_id": "f9c1b66f-df48-4624-b4b4-b323556eb410",
+            "name": "Lumen Industrial",
+            "category": "Machinery",
+            "risk": "low",
+            "score": 89,
+            "spend": 121500
+          }
+        ]
+      }
+    }
+  }
+]
+  execute() grounded results: 1 of 1
+    tool=analytics | error: none | success: true | data: {"kpis":{"monthSpend":8900,"openPurchaseOrders":8,"deliveredPOs":2,"pendingApprovals":2,"approvedPRs":2,"openPRs":5,"vendorCount":8,"vendorsAtRisk":1},"spendTrend":[{"spend":84200,"orders":1,"month":"
+
+Specialist 'inventory-agent' tools=[inventory]:
+  plan filtered to its tools -> [{"tool":"inventory","input":{"query":"Give me a procurement health snapshot."}}]
+  toolSteps actually executed -> ["inventory"]
+STOCK DASHBOARD = {
+  "kpis": {
+    "totalValue": 155024,
+    "totalOnHand": 22021,
+    "productCount": 10,
+    "warehouseCount": 3,
+    "lowStockCount": 1,
+    "movementsToday": 0
+  },
+  "byCategory": [
+    {
+      "name": "Electronics",
+      "value": 79600,
+      "onHand": 43
+    },
+    {
+      "name": "Raw Materials",
+      "value": 34080,
+      "onHand": 4800
+    },
+    {
+      "name": "Office Supplies",
+      "value": 22982,
+      "onHand": 1240
+    },
+    {
+      "name": "Machinery",
+      "value": 13880,
+      "onHand": 38
+    },
+    {
+      "name": "Packaging",
+      "value": 4482,
+      "onHand": 15900
+    }
+  ],
+  "byWarehouse": [
+    {
+      "id": "4c2735f8-54cb-41b3-a107-329deef088f3",
+      "code": "HQ-MAIN",
+      "name": "HQ Main Warehouse",
+      "onHand": 14831,
+      "capacity": 50000,
+      "utilization": 30
+    },
+    {
+      "id": "c0257eca-0f79-438e-abc4-30fde87536e2",
+      "code": "EU-FRA",
+      "name": "Frankfurt Distribution",
+      "onHand": 5487,
+      "capacity": 30000,
+      "utilization": 18
+    },
+    {
+      "id": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "code": "US-WEST",
+      "name": "US West Coast Hub",
+      "onHand": 1703,
+      "capacity": 40000,
+      "utilization": 4
+    }
+  ],
+  "lowStock": [
+    {
+      "_id": "f0938546-94ee-4306-8e64-e7c6a867d9ee",
+      "sku": "COMP-HV-C",
+      "name": "HVAC Compressor Unit C",
+      "category": "Machinery",
+      "unit": "pcs",
+      "unitCost": 3700,
+      "unitPrice": 4200,
+      "reorderLevel": 2,
+      "safetyStock": 4,
+      "leadTimeDays": 14,
+      "expiryTrackable": false,
+      "batchTrackable": false,
+      "defaultVendorId": "f9c1b66f-df48-4624-b4b4-b323556eb410",
+      "defaultVendorName": "Lumen Industrial",
+      "tags": [],
+      "status": "active",
+      "createdAt": "2026-08-03T16:00:12.967Z",
+      "updatedAt": "2026-08-03T16:00:12.967Z",
+      "onHand": 2,
+      "available": 2,
+      "deficit": 0
+    }
+  ]
+}
+DASHBOARD = {
+  "kpis": {
+    "totalValue": 155024,
+    "totalOnHand": 22021,
+    "productCount": 10,
+    "warehouseCount": 3,
+    "lowStockCount": 1,
+    "movementsToday": 0
+  },
+  "byCategory": [
+    {
+      "name": "Electronics",
+      "value": 79600,
+      "onHand": 43
+    },
+    {
+      "name": "Raw Materials",
+      "value": 34080,
+      "onHand": 4800
+    },
+    {
+      "name": "Office Supplies",
+      "value": 22982,
+      "onHand": 1240
+    },
+    {
+      "name": "Machinery",
+      "value": 13880,
+      "onHand": 38
+    },
+    {
+      "name": "Packaging",
+      "value": 4482,
+      "onHand": 15900
+    }
+  ],
+  "byWarehouse": [
+    {
+      "id": "4c2735f8-54cb-41b3-a107-329deef088f3",
+      "code": "HQ-MAIN",
+      "name": "HQ Main Warehouse",
+      "onHand": 14831,
+      "capacity": 50000,
+      "utilization": 30
+    },
+    {
+      "id": "c0257eca-0f79-438e-abc4-30fde87536e2",
+      "code": "EU-FRA",
+      "name": "Frankfurt Distribution",
+      "onHand": 5487,
+      "capacity": 30000,
+      "utilization": 18
+    },
+    {
+      "id": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "code": "US-WEST",
+      "name": "US West Coast Hub",
+      "onHand": 1703,
+      "capacity": 40000,
+      "utilization": 4
+    }
+  ],
+  "recentMovements": [
+    {
+      "_id": "ef4774bf-9163-43cb-9208-16509828d518",
+      "productId": "8cb2502d-6392-4236-bddd-52fa18e9258e",
+      "productSku": "NB-HC-BR",
+      "productName": "Hardcover Notebook, Branded",
+      "warehouseId": "4c2735f8-54cb-41b3-a107-329deef088f3",
+      "warehouseCode": "HQ-MAIN",
+      "type": "IN",
+      "qty": 250,
+      "unitCost": 7.2,
+      "refType": "GRN",
+      "refId": "f398e56f-57a8-4308-a4fb-f4801a1ca7d6",
+      "refNumber": "GRN-50231",
+      "reason": "Receipt against PO-10298",
+      "actorName": "Lena Okafor",
+      "at": "2026-07-29T16:00:13.174Z"
+    },
+    {
+      "_id": "7fdd30d7-b1d3-43fa-a8da-79901e3b4b46",
+      "productId": "c5811156-3f67-47e4-bf06-f92ad763870b",
+      "productSku": "HOOD-EMB",
+      "productName": "Heavyweight Hoodie, Embroidered",
+      "warehouseId": "4c2735f8-54cb-41b3-a107-329deef088f3",
+      "warehouseCode": "HQ-MAIN",
+      "type": "IN",
+      "qty": 250,
+      "unitCost": 32,
+      "refType": "GRN",
+      "refId": "f398e56f-57a8-4308-a4fb-f4801a1ca7d6",
+      "refNumber": "GRN-50231",
+      "reason": "Receipt against PO-10298",
+      "actorName": "Lena Okafor",
+      "at": "2026-07-29T16:00:13.174Z"
+    },
+    {
+      "_id": "00357865-f8b5-4797-8180-da88ba84e336",
+      "productId": "5195341c-1c5a-452f-b668-ca3348a643f2",
+      "productSku": "PTZ-CAM-1",
+      "productName": "PTZ Conference Camera Pro",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 2,
+      "unitCost": 1480,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    },
+    {
+      "_id": "9b82f203-c0cb-43a1-a483-83cfc2aafd16",
+      "productId": "8cb2502d-6392-4236-bddd-52fa18e9258e",
+      "productSku": "NB-HC-BR",
+      "productName": "Hardcover Notebook, Branded",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 40,
+      "unitCost": 7.2,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    },
+    {
+      "_id": "7a90e191-cc02-46d4-8611-663e9a022815",
+      "productId": "767fc49f-c27e-4bc9-ab57-bde7293c5204",
+      "productSku": "ALU-6061",
+      "productName": "Aluminum 6061-T6 Ingot",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 1600,
+      "unitCost": 7.1,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    },
+    {
+      "_id": "f7e0e8dc-a70a-4abb-afa2-8061bd57e13a",
+      "productId": "f0938546-94ee-4306-8e64-e7c6a867d9ee",
+      "productSku": "COMP-HV-C",
+      "productName": "HVAC Compressor Unit C",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 1,
+      "unitCost": 3700,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    },
+    {
+      "_id": "8daa941c-32eb-4dc0-ab4e-ada191a26d11",
+      "productId": "6cc9d10b-1887-4ade-a1bd-4d8bd398e5a3",
+      "productSku": "MBP-14-M4",
+      "productName": "MacBook Pro 14\" M4",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 4,
+      "unitCost": 2050,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    },
+    {
+      "_id": "cec942ac-e5b7-43c9-b70a-b7b8fca5526c",
+      "productId": "182605b3-da0e-44a3-9bb6-2e64dcd2be79",
+      "productSku": "PAPER-A4-X",
+      "productName": "Premium A4 Paper 80gsm",
+      "warehouseId": "407baeb7-793b-494f-a994-df81d2a86edb",
+      "warehouseCode": "US-WEST",
+      "type": "IN",
+      "qty": 20,
+      "unitCost": 4.2,
+      "refType": "Manual",
+      "reason": "Opening balance",
+      "actorName": "system",
+      "at": "2026-07-04T18:00:13.010Z"
+    }
+  ],
+  "lowStock": [
+    {
+      "_id": "f0938546-94ee-4306-8e64-e7c6a867d9ee",
+      "sku": "COMP-HV-C",
+      "name": "HVAC Compressor Unit C",
+      "category": "Machinery",
+      "unit": "pcs",
+      "unitCost": 3700,
+      "unitPrice": 4200,
+      "reorderLevel": 2,
+      "safetyStock": 4,
+      "leadTimeDays": 14,
+      "expiryTrackable": false,
+      "batchTrackable": false,
+      "defaultVendorId": "f9c1b66f-df48-4624-b4b4-b323556eb410",
+      "defaultVendorName": "Lumen Industrial",
+      "tags": [],
+      "status": "active",
+      "createdAt": "2026-08-03T16:00:12.967Z",
+      "updatedAt": "2026-08-03T16:00:12.967Z",
+      "onHand": 2,
+      "available": 2,
+      "deficit": 0
+    }
+  ]
+}
+{"t":"2026-08-04T07:23:04.420Z","lvl":"info","msg":"inventory.tool.executed","scope":"ai","action":"summary"}
+TOOL RESULTS = [
+  {
+    "tool": "inventory",
+    "description": "Inventory data: low-stock products, out-of-stock products, product search by name or SKU, inventory summary, and single-product details. Read-only — fetches data, never generates text.",
+    "data": {
+      "success": true,
+      "action": "summary",
+      "data": {
+        "kpis": {
+          "totalValue": 155024,
+          "totalOnHand": 22021,
+          "productCount": 10,
+          "warehouseCount": 3,
+          "lowStockCount": 1,
+          "movementsToday": 0
+        },
+        "byCategory": [
+          {
+            "name": "Electronics",
+            "value": 79600,
+            "onHand": 43
+          },
+          {
+            "name": "Raw Materials",
+            "value": 34080,
+            "onHand": 4800
+          },
+          {
+            "name": "Office Supplies",
+            "value": 22982,
+            "onHand": 1240
+          },
+          {
+            "name": "Machinery",
+            "value": 13880,
+            "onHand": 38
+          },
+          {
+            "name": "Packaging",
+            "value": 4482,
+            "onHand": 15900
+          }
+        ],
+        "byWarehouse": [
+          {
+            "id": "4c2735f8-54cb-41b3-a107-329deef088f3",
+            "code": "HQ-MAIN",
+            "name": "HQ Main Warehouse",
+            "onHand": 14831,
+            "capacity": 50000,
+            "utilization": 30
+          },
+          {
+            "id": "c0257eca-0f79-438e-abc4-30fde87536e2",
+            "code": "EU-FRA",
+            "name": "Frankfurt Distribution",
+            "onHand": 5487,
+            "capacity": 30000,
+            "utilization": 18
+          },
+          {
+            "id": "407baeb7-793b-494f-a994-df81d2a86edb",
+            "code": "US-WEST",
+            "name": "US West Coast Hub",
+            "onHand": 1703,
+            "capacity": 40000,
+            "utilization": 4
+          }
+        ],
+        "lowStockTopN": [
+          {
+            "_id": "f0938546-94ee-4306-8e64-e7c6a867d9ee",
+            "sku": "COMP-HV-C",
+            "name": "HVAC Compressor Unit C",
+            "category": "Machinery",
+            "unit": "pcs",
+            "unitCost": 3700,
+            "unitPrice": 4200,
+            "reorderLevel": 2,
+            "safetyStock": 4,
+            "leadTimeDays": 14,
+            "expiryTrackable": false,
+            "batchTrackable": false,
+            "defaultVendorId": "f9c1b66f-df48-4624-b4b4-b323556eb410",
+            "defaultVendorName": "Lumen Industrial",
+            "tags": [],
+            "status": "active",
+            "createdAt": "2026-08-03T16:00:12.967Z",
+            "updatedAt": "2026-08-03T16:00:12.967Z",
+            "onHand": 2,
+            "available": 2,
+            "deficit": 0
+          }
+        ]
+      }
+    }
+  }
+]
+  execute() grounded results: 1 of 1
+    tool=inventory | error: none | success: true | data: {"kpis":{"totalValue":155024,"totalOnHand":22021,"productCount":10,"warehouseCount":3,"lowStockCount":1,"movementsToday":0},"byCategory":[{"name":"Electronics","value":79600,"onHand":43},{"name":"Raw 
+
+Specialist 'vendor-risk-agent' tools=[vendor,analytics]:
+  plan filtered to its tools -> [{"tool":"analytics","input":{"query":"Give me a procurement health snapshot."}}]
+  toolSteps actually executed -> ["analytics"]
+{"t":"2026-08-04T07:23:04.421Z","lvl":"info","msg":"analytics.tool.executed","scope":"ai","action":"summary"}
+TOOL RESULTS = [
+  {
+    "tool": "analytics",
+    "description": "Spend trend, spend by category/department, approval funnel, top vendors by spend, PR cycle times, and an overall procurement KPI summary. Read-only — fetches data, never generates text.",
+    "data": {
+      "success": true,
+      "action": "summary",
+      "data": {
+        "kpis": {
+          "monthSpend": 8900,
+          "openPurchaseOrders": 8,
+          "deliveredPOs": 2,
+          "pendingApprovals": 2,
+          "approvedPRs": 2,
+          "openPRs": 5,
+          "vendorCount": 8,
+          "vendorsAtRisk": 1
+        },
+        "spendTrend": [
+          {
+            "spend": 84200,
+            "orders": 1,
+            "month": "2026-2"
+          },
+          {
+            "spend": 12450,
+            "orders": 1,
+            "month": "2026-3"
+          },
+          {
+            "spend": 47210,
+            "orders": 1,
+            "month": "2026-4"
+          },
+          {
+            "spend": 9320,
+            "orders": 1,
+            "month": "2026-5"
+          },
+          {
+            "spend": 94200,
+            "orders": 2,
+            "month": "2026-6"
+          },
+          {
+            "spend": 102200,
+            "orders": 3,
+            "month": "2026-7"
+          },
+          {
+            "spend": 8900,
+            "orders": 1,
+            "month": "2026-8"
+          }
+        ],
+        "spendByCategory": [
+          {
+            "spend": 842300,
+            "vendors": 1,
+            "category": "Electronics"
+          },
+          {
+            "spend": 755200,
+            "vendors": 2,
+            "category": "Logistics"
+          },
+          {
+            "spend": 528900,
+            "vendors": 1,
+            "category": "Raw Materials"
+          },
+          {
+            "spend": 318200,
+            "vendors": 1,
+            "category": "Packaging"
+          },
+          {
+            "spend": 296700,
+            "vendors": 1,
+            "category": "IT Services"
+          },
+          {
+            "spend": 184300,
+            "vendors": 1,
+            "category": "Office Supplies"
+          },
+          {
+            "spend": 121500,
+            "vendors": 1,
+            "category": "Machinery"
+          }
+        ],
+        "spendByDepartment": [
+          {
+            "spend": 35280,
+            "count": 1,
+            "department": "Manufacturing"
+          },
+          {
+            "spend": 11750,
+            "count": 1,
+            "department": "Marketing"
+          }
+        ],
+        "approvalFunnel": [
+          {
+            "stage": "Draft",
+            "count": 1
+          },
+          {
+            "stage": "Submitted",
+            "count": 1
+          },
+          {
+            "stage": "UnderReview",
+            "count": 1
+          },
+          {
+            "stage": "Approved",
+            "count": 2
+          },
+          {
+            "stage": "Rejected",
+            "count": 1
+          }
+        ],
+        "topVendorsBySpend": [
+          {
+            "_id": "7a8afbfe-6a9b-4818-9c9b-bf279c0c35e6",
+            "name": "Apex Components Ltd.",
+            "category": "Electronics",
+            "risk": "low",
+            "score": 96,
+            "spend": 842300
+          },
+          {
+            "_id": "29d082d3-a195-4a7e-b29c-c5d5eda7a666",
+            "name": "Northwind Logistics",
+            "category": "Logistics",
+            "risk": "low",
+            "score": 91,
+            "spend": 612400
+          },
+          {
+            "_id": "dcad4db6-0c4d-4f0c-b76c-d72ac457179f",
+            "name": "Helix Materials Co.",
+            "category": "Raw Materials",
+            "risk": "medium",
+            "score": 87,
+            "spend": 528900
+          },
+          {
+            "_id": "d7f176c6-9737-4420-9428-bbc724a165a8",
+            "name": "Kairo Print Works",
+            "category": "Packaging",
+            "risk": "low",
+            "score": 82,
+            "spend": 318200
+          },
+          {
+            "_id": "50ed9a80-c540-4a21-9a74-0e418c50b5fc",
+            "name": "Solace Cloud Services",
+            "category": "IT Services",
+            "risk": "medium",
+            "score": 78,
+            "spend": 296700
+          },
+          {
+            "_id": "971d9961-52cc-48eb-91c6-c35850db057f",
+            "name": "Bramble & Co.",
+            "category": "Office Supplies",
+            "risk": "low",
+            "score": 72,
+            "spend": 184300
+          },
+          {
+            "_id": "f8948e88-5980-4868-a205-9076258d310c",
+            "name": "Orbita Freight",
+            "category": "Logistics",
+            "risk": "high",
+            "score": 64,
+            "spend": 142800
+          },
+          {
+            "_id": "f9c1b66f-df48-4624-b4b4-b323556eb410",
+            "name": "Lumen Industrial",
+            "category": "Machinery",
+            "risk": "low",
+            "score": 89,
+            "spend": 121500
+          }
+        ]
+      }
+    }
+  }
+]
+  execute() grounded results: 1 of 1
+    tool=analytics | error: none | success: true | data: {"kpis":{"monthSpend":8900,"openPurchaseOrders":8,"deliveredPOs":2,"pendingApprovals":2,"approvedPRs":2,"openPRs":5,"vendorCount":8,"vendorsAtRisk":1},"spendTrend":[{"spend":84200,"orders":1,"month":"
+
+(If all tools show "Tool not registered" or success:false here, grounded is empty and the LLM receives: "No tool produced data for this question.")

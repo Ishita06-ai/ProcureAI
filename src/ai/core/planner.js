@@ -35,16 +35,17 @@ function matchedIntents(text) {
 export function plan(message = '') {
   const text = message || '';
   const intents = matchedIntents(text);
-  const steps = intents.map((intent) => ({ tool: intent.tool, input: { query: text } }));
+  let steps = intents.map((intent) => ({ tool: intent.tool, input: { query: text } }));
 
   // Vague/general questions ("how are we doing?", "give me a snapshot") get
   // the broadest, cheapest signal: analytics KPIs + inventory low-stock.
   if (steps.length === 0) {
-    return [
+    steps = [
       { tool: 'analytics', input: { query: text } },
       { tool: 'inventory', input: { query: text } },
     ];
   }
+  console.log('PLAN =', JSON.stringify(steps, null, 2));
   return steps;
 }
 

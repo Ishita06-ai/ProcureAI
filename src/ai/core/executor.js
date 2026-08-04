@@ -29,6 +29,7 @@ export async function execute(planSteps = [], context = {}) {
       }
     })
   );
+  console.log('TOOL RESULTS =', JSON.stringify(results, null, 2));
   return results;
 }
 

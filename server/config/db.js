@@ -14,6 +14,11 @@ console.log("DB_NAME =", process.env.DB_NAME);
   promise = mongoose.connect(uri, {
     dbName: process.env.DB_NAME || 'procurio',
     serverSelectionTimeoutMS: 8000,
-  }).then(c => c.connection);
+  }).then((c) => {
+    console.log('Connected DB =', c.connection.name);
+    console.log('Mongo URI =', process.env.MONGO_URL);
+    console.log('DB_NAME =', process.env.DB_NAME);
+    return c.connection;
+  });
   return promise;
 }

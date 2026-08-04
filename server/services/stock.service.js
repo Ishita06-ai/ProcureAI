@@ -175,7 +175,7 @@ export const StockService = {
     ]);
     const totalValue = totalValueAgg[0]?.value || 0;
     const totalOnHand = totalValueAgg[0]?.onHand || 0;
-    return {
+    const result = {
       kpis: {
         totalValue, totalOnHand,
         productCount, warehouseCount,
@@ -190,5 +190,7 @@ export const StockService = {
       recentMovements,
       lowStock: lowStock.slice(0, 8),
     };
+    console.log('STOCK DASHBOARD =', JSON.stringify({ kpis: result.kpis, byCategory: result.byCategory, byWarehouse: result.byWarehouse, lowStock: result.lowStock }, null, 2));
+    return result;
   },
 };

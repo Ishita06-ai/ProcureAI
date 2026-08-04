@@ -122,6 +122,7 @@ async function handleSearchBySku(input) {
 
 async function handleSummary() {
   const dashboard = await StockService.dashboard();
+  console.log('DASHBOARD =', JSON.stringify(dashboard, null, 2));
   return {
     kpis: dashboard.kpis,
     byCategory: dashboard.byCategory,
