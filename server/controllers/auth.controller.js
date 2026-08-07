@@ -18,4 +18,9 @@ export const AuthController = {
     const user = await AuthService.me(req.user.id);
     res.json(ok({ user }));
   }),
+  demoLogin: asyncHandler(async (req, res) => {
+    const { user, token } = await AuthService.demoLogin(req.body.role);
+    await recordAudit({ req, action: 'auth.demo_login', resource: 'user', resourceId: user._id, meta: { role: user.role, via: 'demo' } });
+    res.json(ok({ user, token }));
+  }),
 };

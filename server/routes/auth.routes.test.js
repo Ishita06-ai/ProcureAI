@@ -22,6 +22,21 @@ function mockRes() {
 }
 
 describe('auth.routes login protection', () => {
+  test('POST /demo-login mounts limiter + validate + handler, and validates role', () => {
+    const layer = authRoutes.stack.find((l) => l.method === 'POST' && l.path === '/demo-login');
+    assert.ok(layer, 'POST /demo-login route is registered');
+    assert.ok(layer.handlers.length >= 3, 'demo-login chain includes limiter, validator, and handler');
+    // The validator is the second middleware: it must reject unknown roles
+    // before the handler ever runs (it forwards a 400 ApiError to next()).
+    const validator = layer.handlers[1];
+    const req = { method: 'POST', path: '/demo-login', body: { role: 'root' }, ip: '127.0.0.1', headers: {}, params: {}, query: {} };
+    const res = mockRes();
+    let err = null;
+    validator(req, res, (e) => { err = e; });
+    assert.equal(err?.status, 400, 'unknown demo role is rejected by the validator');
+    assert.equal(err?.isApiError, true, 'validator forwards an ApiError');
+  });
+
   test('POST /login mounts limiter + validate + handler (in that order)', () => {
     const layer = authRoutes.stack.find((l) => l.method === 'POST' && l.path === '/login');
     assert.ok(layer, 'POST /login route is registered');

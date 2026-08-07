@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Boxes, Loader2, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Boxes, Loader2, ArrowRight, ShieldCheck, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,12 +12,14 @@ import { useAuth } from '@/lib/auth-context.jsx';
 import { LOGIN, REGISTER } from '@/lib/constants/testIds/auth.js';
 
 export function LoginPage() {
-  const { login, register } = useAuth();
+  const { login, register, demoLogin } = useAuth();
   const [mode, setMode] = useState('login'); // 'login' | 'register'
 
-  // Sign-in state
-  const [email, setEmail] = useState('admin@procurio.app');
-  const [password, setPassword] = useState('procurio123');
+  // Sign-in state — starts empty. Pre-filling a real account (admin@procurio.app /
+  // procurio123 in earlier versions) published working credentials on the login
+  // page to anyone who visited the deployed site. Users must type their own.
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   // Registration state
   const [name, setName] = useState('');
@@ -26,6 +28,18 @@ export function LoginPage() {
   const [regConfirm, setRegConfirm] = useState('');
 
   const [loading, setLoading] = useState(false);
+
+  // One demo button at a time; null when idle. 'admin' | 'buyer' while pending.
+  const [demoLoading, setDemoLoading] = useState(null);
+
+  const onDemo = async (role) => {
+    setDemoLoading(role);
+    try {
+      const u = await demoLogin(role);
+      toast.success(`Demo mode — signed in as ${u.name}`);
+    } catch (err) { toast.error(err.message || 'Demo login failed'); }
+    finally { setDemoLoading(null); }
+  };
 
   const onLogin = async (e) => {
     e.preventDefault();
@@ -83,14 +97,14 @@ export function LoginPage() {
                 <form onSubmit={onLogin} className="mt-6 space-y-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="l-email">Work email</Label>
-                    <Input id="l-email" type="email" autoComplete="email" data-testid={LOGIN.emailInput} value={email} onChange={(e) => setEmail(e.target.value)} required />
+                    <Input id="l-email" type="email" autoComplete="email" placeholder="you@company.com" data-testid={LOGIN.emailInput} value={email} onChange={(e) => setEmail(e.target.value)} required />
                   </div>
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <Label htmlFor="l-pwd">Password</Label>
                       <button type="button" data-testid={LOGIN.forgotPasswordLink} className="text-[11px] text-muted-foreground hover:text-foreground">Forgot?</button>
                     </div>
-                    <Input id="l-pwd" type="password" autoComplete="current-password" data-testid={LOGIN.passwordInput} value={password} onChange={(e) => setPassword(e.target.value)} required />
+                    <Input id="l-pwd" type="password" autoComplete="current-password" placeholder="••••••••" data-testid={LOGIN.passwordInput} value={password} onChange={(e) => setPassword(e.target.value)} required />
                   </div>
                   <Button type="submit" disabled={loading} data-testid={LOGIN.submitButton} className="w-full h-10 gap-1.5">
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Sign in <ArrowRight className="h-4 w-4" /></>}
@@ -127,6 +141,30 @@ export function LoginPage() {
                 </form>
               </>
             )}
+
+            {/* Demo showcase — one-click access for interviews/demos. Sample
+                data only, no credentials shown, no account creation required. */}
+            <div className="mt-6 border-t border-border/60 pt-5">
+              <div className="flex items-center gap-1.5 mb-1">
+                <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Demo accounts</span>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Explore the platform instantly with sample data — no signup or credentials needed.
+              </p>
+              <div className="space-y-2">
+                <Button variant="outline" type="button" disabled={demoLoading !== null} onClick={() => onDemo('admin')} data-testid={LOGIN.demoAdminButton} className="w-full h-10 justify-start gap-2">
+                  {demoLoading === 'admin' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4 text-primary" />}
+                  <span className="flex-1 text-left">Explore as Demo Admin</span>
+                  <span className="text-[10px] text-muted-foreground">full access</span>
+                </Button>
+                <Button variant="outline" type="button" disabled={demoLoading !== null} onClick={() => onDemo('buyer')} data-testid={LOGIN.demoBuyerButton} className="w-full h-10 justify-start gap-2">
+                  {demoLoading === 'buyer' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4 text-primary" />}
+                  <span className="flex-1 text-left">Explore as Demo Buyer</span>
+                  <span className="text-[10px] text-muted-foreground">buyer view</span>
+                </Button>
+              </div>
+            </div>
 
             <div className="mt-5 text-center text-sm text-muted-foreground">
               {mode === 'login' ? (

@@ -1,7 +1,19 @@
+import { randomBytes } from 'crypto';
 import { User } from '../models/user.model.js';
 import { hashPassword, verifyPassword } from '../utils/password.js';
 import { signJwt } from '../utils/jwt.js';
-import { conflict, unauthorized, notFound } from '../utils/apiError.js';
+import { conflict, unauthorized, notFound, badRequest } from '../utils/apiError.js';
+
+// Demo accounts for interview / demo showcasing. These are deliberately NOT
+// real credentials: each account's password is a random, unguessable hash that
+// is never stored or shown anywhere, so the account can only be entered through
+// the demo-login endpoint — never the normal login form. Accounts are created
+// on first use (find-or-create), so the demo works on any environment (local,
+// staging, Vercel) without a reseed, and they only touch the sample dataset.
+export const DEMO_ACCOUNTS = {
+  admin: { email: 'demo.admin@procurio.app', name: 'Demo Admin', role: 'admin' },
+  buyer: { email: 'demo.buyer@procurio.app', name: 'Demo Buyer', role: 'buyer' },
+};
 
 export const AuthService = {
   async register({ email, name, password, role }) {
@@ -28,5 +40,23 @@ export const AuthService = {
     const user = await User.findById(userId);
     if (!user) throw notFound('User not found');
     return user;
+  },
+
+  // One-click demo access. Accepts 'admin' | 'buyer' only — anything else is
+  // a 400. Returns the same { user, token } shape as login() so the frontend
+  // treats it identically. No scrypt verification (nothing to verify against),
+  // so it is cheap and safe to expose behind a rate limiter.
+  async demoLogin(role) {
+    const cfg = DEMO_ACCOUNTS[role];
+    if (!cfg) throw badRequest(`Unknown demo account: ${role}`);
+    let user = await User.findOne({ email: cfg.email });
+    if (!user) {
+      const passwordHash = await hashPassword(randomBytes(32).toString('hex'));
+      user = await User.create({ email: cfg.email, name: cfg.name, role: cfg.role, passwordHash });
+    }
+    user.lastLoginAt = new Date();
+    await user.save();
+    const token = signJwt({ sub: user._id, role: user.role, name: user.name, email: user.email });
+    return { user, token };
   },
 };

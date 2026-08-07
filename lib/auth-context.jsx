@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { api, saveToken, clearToken } from '@/lib/api-client';
 
-const AuthCtx = createContext({ user: null, loading: true, login: async () => {}, logout: () => {}, register: async () => {} });
+const AuthCtx = createContext({ user: null, loading: true, login: async () => {}, logout: () => {}, register: async () => {}, demoLogin: async () => {} });
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -33,9 +33,15 @@ export function AuthProvider({ children }) {
     setUser(res.data.user);
     return res.data.user;
   };
+  const demoLogin = async (role) => {
+    const res = await api.demoLogin(role);
+    saveToken(res.data.token);
+    setUser(res.data.user);
+    return res.data.user;
+  };
   const logout = () => { clearToken(); setUser(null); };
 
-  return <AuthCtx.Provider value={{ user, loading, login, logout, register }}>{children}</AuthCtx.Provider>;
+  return <AuthCtx.Provider value={{ user, loading, login, logout, register, demoLogin }}>{children}</AuthCtx.Provider>;
 }
 
 export const useAuth = () => useContext(AuthCtx);
