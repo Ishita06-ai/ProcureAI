@@ -1,0 +1,34 @@
+{
+  "ts": "2026-08-07T09:26:53.515Z",
+  "loginAttempts": 50,
+  "chatBurst": 100,
+  "results": [
+    {
+      "part": "login",
+      "label": "login burst (current code)",
+      "requests": 50,
+      "rejected429": 45,
+      "reachedPasswordCheck": 5,
+      "blockedPct": 90,
+      "burstMs": 802
+    },
+    {
+      "part": "chat",
+      "label": "with route rate limiter (20/5min)",
+      "requests": 100,
+      "rejected429": 80,
+      "allowed": 20,
+      "blockedPct": 80,
+      "dbQueriesExecuted": 43
+    },
+    {
+      "part": "chat",
+      "label": "without limiter (controller invoked directly)",
+      "requests": 100,
+      "rejected429": 0,
+      "allowed": 100,
+      "blockedPct": 0,
+      "dbQueriesExecuted": 200
+    }
+  ]
+}

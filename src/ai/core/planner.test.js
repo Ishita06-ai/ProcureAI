@@ -50,6 +50,51 @@ describe('planner.plan', () => {
     assert.doesNotThrow(() => plan());
     assert.doesNotThrow(() => plan(''));
   });
+
+  // Vendor-domain questions that only touch spend/category do NOT also fire the
+  // analytics tool — the vendor tool already returns spend + category breakdown,
+  // so the analytics call would duplicate it (measured waste in bench-eval).
+  test('vendor + spend question selects vendor only (no analytics duplicate)', () => {
+    const steps = plan('who are our top vendors by spend?');
+    assert.deepEqual(steps.map((s) => s.tool), ['vendor']);
+  });
+
+  test('vendor + category breakdown selects vendor only', () => {
+    const steps = plan('give me a vendor category breakdown');
+    assert.deepEqual(steps.map((s) => s.tool), ['vendor']);
+  });
+
+  test('vendor + deeper analytics signal (trend) keeps BOTH tools', () => {
+    const steps = plan('what is the spend trend by vendor category?');
+    const tools = steps.map((s) => s.tool);
+    assert.ok(tools.includes('vendor'));
+    assert.ok(tools.includes('analytics'));
+  });
+
+  test('"pending purchase orders" selects po only (pending is not analytics)', () => {
+    const steps = plan('show pending purchase orders');
+    assert.deepEqual(steps.map((s) => s.tool), ['po']);
+  });
+
+  test('"approvals pending" still routes to analytics', () => {
+    const steps = plan('what approvals are pending?');
+    assert.deepEqual(steps.map((s) => s.tool), ['analytics']);
+  });
+
+  test('cycle-time questions route to analytics (no fallback waste)', () => {
+    const steps = plan('what is the average cycle time for purchase requests?');
+    assert.deepEqual(steps.map((s) => s.tool), ['analytics']);
+  });
+
+  test('turnaround questions route to analytics', () => {
+    const steps = plan('how long is the turnaround for purchase requests?');
+    assert.deepEqual(steps.map((s) => s.tool), ['analytics']);
+  });
+
+  test('pure analytics spend-by-category is unaffected', () => {
+    const steps = plan('what is the spend by category?');
+    assert.deepEqual(steps.map((s) => s.tool), ['analytics']);
+  });
 });
 
 describe('planner.hasIntent', () => {

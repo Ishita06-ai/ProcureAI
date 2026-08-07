@@ -93,6 +93,8 @@ const PurchaseRequestSchema = new mongoose.Schema({
 }, { timestamps: true, versionKey: false });
 
 PurchaseRequestSchema.index({ status: 1, createdAt: -1 });
+PurchaseRequestSchema.index({ status: 1, department: 1 }); // spend-by-department group
+PurchaseRequestSchema.index({ createdAt: -1 });             // CSV export sort
 PurchaseRequestSchema.index({ title: 'text', description: 'text', number: 'text' });
 
 export const PurchaseRequest = mongoose.models.PurchaseRequest || mongoose.model('PurchaseRequest', PurchaseRequestSchema);

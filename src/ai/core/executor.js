@@ -21,10 +21,7 @@ export async function execute(planSteps = [], context = {}) {
       }
       try {
         const input = { ...context, ...(step.input || {}) };
-        console.log('TOOL NAME =', tool.name);
-        console.log('TOOL INPUT =', JSON.stringify(input, null, 2));
         const data = await tool.execute(input);
-        console.log('TOOL OUTPUT =', JSON.stringify(data, null, 2));
         return { tool: tool.name, description: tool.description, data };
       } catch (err) {
         logger.error('executor.tool_failed', { tool: tool.name, err: err.message });
@@ -32,7 +29,6 @@ export async function execute(planSteps = [], context = {}) {
       }
     })
   );
-  console.log('TOOL RESULTS =', JSON.stringify(results, null, 2));
   return results;
 }
 

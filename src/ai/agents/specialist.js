@@ -12,12 +12,11 @@ import { execute } from '../core/executor.js';
 import { groundedOnly } from '../core/toolResult.js';
 import { generateReply } from '../services/gemini.service.js';
 import { logger } from '../utils/logger.js';
-import { toCitations, composeFallback } from '../core/format.js';
+import { toCitations, composeFallback, serializeToolResults } from '../core/format.js';
 
+// Same bounded serialization as the Supervisor — one helper, one budget.
 function serializeGrounded(toolResults) {
-  return groundedOnly(toolResults)
-    .map((r) => `# ${r.tool} — ${r.data?.action ?? 'result'} (${r.description})\n${JSON.stringify(r.data?.data ?? r.data)}`)
-    .join('\n\n');
+  return serializeToolResults(toolResults);
 }
 
 /**

@@ -1,0 +1,27 @@
+{
+  "ts": "2026-08-07T08:49:32.630Z",
+  "trials": 500,
+  "pFail": 0.4,
+  "results": [
+    {
+      "label": "baseline (no retry)",
+      "trials": 500,
+      "successes": 317,
+      "failureRate": 36.6
+    },
+    {
+      "label": "with retry (attempts=3, backoff, transient-only)",
+      "trials": 500,
+      "successes": 471,
+      "failureRate": 5.8,
+      "avgAttemptsPerTrial": 1.54,
+      "recoveredTrials": 29
+    },
+    {
+      "label": "non-transient errors are not retried",
+      "trials": 500,
+      "attemptsMade": 500,
+      "attemptsPerTrial": 1
+    }
+  ]
+}

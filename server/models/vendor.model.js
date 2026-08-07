@@ -17,5 +17,13 @@ const VendorSchema = new mongoose.Schema({
 }, { timestamps: true, versionKey: false });
 
 VendorSchema.index({ name: 'text', category: 'text', country: 'text' });
+// Hot read paths: leaderboards (score/spend), high-risk watchlist, and
+// category breakdown. Each is a sort-first query — dedicated indexes avoid
+// collection scans.
+VendorSchema.index({ score: -1 });
+VendorSchema.index({ spend: -1 });
+VendorSchema.index({ risk: 1, score: 1, spend: -1 });
+VendorSchema.index({ category: 1, spend: -1 });
+VendorSchema.index({ createdAt: -1 });
 
 export const Vendor = mongoose.models.Vendor || mongoose.model('Vendor', VendorSchema);

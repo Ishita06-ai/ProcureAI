@@ -2,6 +2,17 @@
 // Free-tier compatible. Default model: gemini-2.5-flash (set via GEMINI_MODEL).
 import { GoogleGenAI } from '@google/genai';
 import { logger } from '../../utils/logger.js';
+import { retry } from '../../utils/retry.js';
+
+// Only transient failures get retried: 429/5xx HTTP statuses and network
+// errors (timeouts, connection resets). Auth errors (401/403) and malformed
+// requests are NOT transient — retrying them just wastes attempts.
+function isTransientGeminiError(err) {
+  const status = err?.status ?? err?.code ?? err?.response?.status;
+  if (typeof status === 'number') return status === 429 || (status >= 500 && status < 600);
+  const msg = String(err?.message || '');
+  return /rate\s*limit|quota|timeout|ETIMEDOUT|ECONNRESET|ECONNREFUSED|5\d\d|temporar/.test(msg);
+}
 
 export class GeminiProvider {
   constructor() {
@@ -32,10 +43,14 @@ export class GeminiProvider {
 
     let res;
     try {
-      res = await this.client.models.generateContent({
-        model: this.model,
-        contents,
-        config,
+      // Transient failures (rate limits, 5xx, network blips) are retried with
+      // exponential backoff + jitter before giving up. The project-wide retry()
+      // utility is bench-verified (see benchmark/bench-reliability.js).
+      res = await retry(() => this.client.models.generateContent({ model: this.model, contents, config }), {
+        attempts: 3,
+        baseMs: 400,
+        jitter: true,
+        shouldRetry: isTransientGeminiError,
       });
     } catch (e) {
       logger.warn('gemini.call_failed', { err: e?.message });

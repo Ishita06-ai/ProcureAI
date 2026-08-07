@@ -19,13 +19,29 @@ function matches(text, ...keywords) {
 const INTENTS = [
   { tool: 'inventory', keywords: ['stock', 'inventory', 'warehouse', 'sku', 'product', 'reorder', 'stockout', 'replenish'] },
   { tool: 'vendor', keywords: ['vendor', 'supplier', 'risk', 'preferred'] },
-  { tool: 'analytics', keywords: ['spend', 'cost', 'budget', 'savings', 'expense', 'trend', 'forecast', 'approval', 'pending', 'department', 'category'] },
+  { tool: 'analytics', keywords: ['spend', 'cost', 'budget', 'savings', 'expense', 'trend', 'forecast', 'approval', 'department', 'category', 'cycle time', 'turnaround'] },
   { tool: 'notification', keywords: ['notification', 'alert', 'attention', 'unread'] },
   { tool: 'po', keywords: ['purchase order', 'delivery', 'shipment', 'transit', 'delivered', 'po number'] },
 ];
 
+// The vendor tool already answers spend and category questions from its own
+// data (top-vendors-by-spend, category breakdown, summary). When a message
+// names vendors AND only matches analytics keywords that the vendor tool
+// covers, the analytics call would duplicate the vendor call — so we drop it.
+// Deeper analytics signals (trend, forecast, approval, department, budget,
+// savings) are NOT covered by the vendor tool and keep both calls.
+const ANALYTICS_COVERED_BY_VENDOR = ['spend', 'category'];
+
 function matchedIntents(text) {
-  return INTENTS.filter((intent) => matches(text, ...intent.keywords));
+  const all = INTENTS.filter((intent) => matches(text, ...intent.keywords));
+  const analytics = all.find((i) => i.tool === 'analytics');
+  if (analytics && all.some((i) => i.tool === 'vendor')) {
+    const matchedAnalyticsKeywords = analytics.keywords.filter((k) => matches(text, k));
+    if (matchedAnalyticsKeywords.length && matchedAnalyticsKeywords.every((k) => ANALYTICS_COVERED_BY_VENDOR.includes(k))) {
+      return all.filter((i) => i.tool !== 'analytics');
+    }
+  }
+  return all;
 }
 
 /**
@@ -45,7 +61,6 @@ export function plan(message = '') {
       { tool: 'inventory', input: { query: text } },
     ];
   }
-  console.log('PLAN =', JSON.stringify(steps, null, 2));
   return steps;
 }
 

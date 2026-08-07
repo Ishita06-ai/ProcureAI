@@ -55,7 +55,6 @@ export async function runSupervisor({ message, history = [], actor = null }) {
     // 2. WORKER — the specialist reasons within its own tools + role prompt.
     const result = await runSpecialist({ message, specialist, context });
     toolResults = result.toolResults;
-    console.log('RAW TOOL RESULTS (specialist) =', JSON.stringify(toolResults, null, 2));
     citations = result.citations;
 
     // 3. SYNTHESIZE — supervisor writes the final answer from the findings.
@@ -80,7 +79,6 @@ export async function runSupervisor({ message, history = [], actor = null }) {
     // GENERALIST — classic single-agent path over all tools.
     const planSteps = plan(message);
     toolResults = await execute(planSteps, context);
-    console.log('RAW TOOL RESULTS (generalist) =', JSON.stringify(toolResults, null, 2));
     citations = toCitations(toolResults);
     const systemPrompt = buildSupervisorPrompt(toolResults);
     try {

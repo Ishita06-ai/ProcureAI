@@ -88,5 +88,3 @@ export function _resetToolRegistry() {
   registry.clear();
   loaded = false;
 }
-
-console.log('REGISTERED TOOLS =', [...registry.keys()]);

@@ -30,5 +30,6 @@ const StockMovementSchema = new mongoose.Schema({
 StockMovementSchema.index({ at: -1 });
 StockMovementSchema.index({ productId: 1, at: -1 });
 StockMovementSchema.index({ warehouseId: 1, at: -1 });
+StockMovementSchema.index({ type: 1, at: -1 }); // type-filtered movements list
 
 export const StockMovement = mongoose.models.StockMovement || mongoose.model('StockMovement', StockMovementSchema);

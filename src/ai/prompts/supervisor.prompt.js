@@ -1,7 +1,7 @@
 // Supervisor persona + prompt assembly for the top-level agent.
 // Kept separate from core/agent.js so prompt copy can be iterated on
 // without touching orchestration logic.
-import { groundedOnly } from '../core/toolResult.js';
+import { serializeToolResults } from '../core/format.js';
 
 const PERSONA = `You are Procurio AI, the in-app intelligence agent for an enterprise procurement and inventory platform.
 You are concise, professional, and ground every claim in the TOOL_RESULTS provided below.
@@ -21,9 +21,7 @@ Keep responses under 220 words unless the user explicitly asks for depth.`;
  * @returns {string}
  */
 export function buildSupervisorPrompt(toolResults = []) {
-  const grounded = groundedOnly(toolResults)
-    .map((r) => `# ${r.tool} — ${r.data.action ?? 'result'} (${r.description})\n${JSON.stringify(r.data.data ?? r.data)}`)
-    .join('\n\n');
+  const grounded = serializeToolResults(toolResults);
 
   return `${PERSONA}\n\nTOOL_RESULTS (authoritative live data for this answer):\n${grounded || 'No tool produced data for this question.'}`;
 }

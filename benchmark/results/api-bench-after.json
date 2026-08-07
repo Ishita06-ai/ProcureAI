@@ -1,0 +1,609 @@
+{
+  "ts": "2026-08-07T09:25:55.994Z",
+  "iters": 8,
+  "endpoints": {
+    "dashboard/overview": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 38.75,
+          "p50": 39.63,
+          "p95": 61.27,
+          "min": 20.63,
+          "max": 61.27
+        },
+        "queriesPerRequest": {
+          "mean": 21,
+          "values": [
+            21,
+            21,
+            21,
+            21,
+            21,
+            21,
+            21,
+            21
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 1.99,
+          "p50": 1.77,
+          "p95": 2.81,
+          "min": 1.51,
+          "max": 2.81
+        },
+        "queriesPerRequest": {
+          "mean": 0,
+          "values": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "analytics/overview": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 103.93,
+          "p50": 107.39,
+          "p95": 113.45,
+          "min": 80.52,
+          "max": 113.45
+        },
+        "queriesPerRequest": {
+          "mean": 12,
+          "values": [
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 0.73,
+          "p50": 0.69,
+          "p95": 0.89,
+          "min": 0.54,
+          "max": 0.89
+        },
+        "queriesPerRequest": {
+          "mean": 0,
+          "values": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "inventory/dashboard": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 270.24,
+          "p50": 262.91,
+          "p95": 338.17,
+          "min": 241.64,
+          "max": 338.17
+        },
+        "queriesPerRequest": {
+          "mean": 13,
+          "values": [
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 0.34,
+          "p50": 0.31,
+          "p95": 0.48,
+          "min": 0.25,
+          "max": 0.48
+        },
+        "queriesPerRequest": {
+          "mean": 0,
+          "values": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "inventory/low-stock": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 46.51,
+          "p50": 46.54,
+          "p95": 57.69,
+          "min": 31.45,
+          "max": 57.69
+        },
+        "queriesPerRequest": {
+          "mean": 3,
+          "values": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 0.49,
+          "p50": 0.54,
+          "p95": 0.58,
+          "min": 0.38,
+          "max": 0.58
+        },
+        "queriesPerRequest": {
+          "mean": 0,
+          "values": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "inventory/products": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 10.45,
+          "p50": 9.81,
+          "p95": 13.7,
+          "min": 8.82,
+          "max": 13.7
+        },
+        "queriesPerRequest": {
+          "mean": 3,
+          "values": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 13.82,
+          "p50": 14.08,
+          "p95": 17.28,
+          "min": 11.23,
+          "max": 17.28
+        },
+        "queriesPerRequest": {
+          "mean": 3,
+          "values": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ]
+        }
+      }
+    },
+    "inventory/movements": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 20,
+          "p50": 18.75,
+          "p95": 28.72,
+          "min": 16.83,
+          "max": 28.72
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 18.71,
+          "p50": 18.47,
+          "p95": 20.08,
+          "min": 17.58,
+          "max": 20.08
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    "purchase-orders": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 9.4,
+          "p50": 9.06,
+          "p95": 11.59,
+          "min": 8.03,
+          "max": 11.59
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 8.54,
+          "p50": 8.35,
+          "p95": 9.52,
+          "min": 7.46,
+          "max": 9.52
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    "purchase-requests": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 8.94,
+          "p50": 8.21,
+          "p95": 13.49,
+          "min": 7.16,
+          "max": 13.49
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 7.89,
+          "p50": 8.01,
+          "p95": 8.61,
+          "min": 6.6,
+          "max": 8.61
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    "vendors": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 7.78,
+          "p50": 7.38,
+          "p95": 11.97,
+          "min": 4.17,
+          "max": 11.97
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 5.74,
+          "p50": 5.45,
+          "p95": 7.18,
+          "min": 5.16,
+          "max": 7.18
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    "reports/products": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 18.17,
+          "p50": 19.72,
+          "p95": 24.32,
+          "min": 11.15,
+          "max": 24.32
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 5.36,
+          "p50": 5.22,
+          "p95": 6.39,
+          "min": 4.55,
+          "max": 6.39
+        },
+        "queriesPerRequest": {
+          "mean": 1,
+          "values": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    "reports/vendors": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 16.43,
+          "p50": 15.52,
+          "p95": 22.6,
+          "min": 10.24,
+          "max": 22.6
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 3.11,
+          "p50": 2.44,
+          "p95": 4.71,
+          "min": 2.04,
+          "max": 4.71
+        },
+        "queriesPerRequest": {
+          "mean": 1,
+          "values": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    "reports/purchase-orders": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 77.51,
+          "p50": 74.94,
+          "p95": 105.81,
+          "min": 62.03,
+          "max": 105.81
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 5.06,
+          "p50": 4.78,
+          "p95": 6.26,
+          "min": 3.69,
+          "max": 6.26
+        },
+        "queriesPerRequest": {
+          "mean": 1,
+          "values": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    "reports/purchase-requests": {
+      "cold": {
+        "ms": {
+          "n": 8,
+          "mean": 56.52,
+          "p50": 55.13,
+          "p95": 65.57,
+          "min": 48.37,
+          "max": 65.57
+        },
+        "queriesPerRequest": {
+          "mean": 2,
+          "values": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "warm": {
+        "ms": {
+          "n": 5,
+          "mean": 5.38,
+          "p50": 5.39,
+          "p95": 6.06,
+          "min": 4.55,
+          "max": 6.06
+        },
+        "queriesPerRequest": {
+          "mean": 1,
+          "values": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "cold": {
+      "n": 13,
+      "mean": 51.92,
+      "p50": 19.72,
+      "p95": 262.91,
+      "min": 7.38,
+      "max": 262.91
+    },
+    "warm": {
+      "n": 13,
+      "mean": 5.81,
+      "p50": 5.22,
+      "p95": 18.47,
+      "min": 0.31,
+      "max": 18.47
+    }
+  }
+}

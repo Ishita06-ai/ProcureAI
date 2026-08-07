@@ -3,6 +3,7 @@ import { StockLevel } from '../models/stockLevel.model.js';
 import { StockMovement } from '../models/stockMovement.model.js';
 import { Warehouse } from '../models/warehouse.model.js';
 import { notFound, badRequest } from '../utils/apiError.js';
+import { cached } from '../utils/cache.js';
 
 async function ensureLevel(productId, warehouseId) {
   let lvl = await StockLevel.findOne({ productId, warehouseId });
@@ -109,22 +110,28 @@ export const StockService = {
     return { items, total };
   },
 
+  // Low-stock report is a hot read (inventory dashboards, AI tool) and is
+  // expensive (product scan + stock-level aggregation). Cache it with a short
+  // TTL — matches the existing dashboard/analytics caching pattern; stock
+  // mutations land on the DB immediately and become visible within the TTL.
   async lowStockReport() {
-    const products = await Product.find({ status: 'active', reorderLevel: { $gt: 0 } }).lean();
-    const ids = products.map(p => p._id);
-    const levels = await StockLevel.aggregate([
-      { $match: { productId: { $in: ids } } },
-      { $group: { _id: '$productId', onHand: { $sum: '$onHand' }, reserved: { $sum: '$reserved' } } },
-    ]);
-    const byProduct = Object.fromEntries(levels.map(l => [l._id, l]));
-    return products
-      .map(p => {
-        const s = byProduct[p._id] || { onHand: 0, reserved: 0 };
-        const available = Math.max(0, s.onHand - s.reserved);
-        return { ...p, onHand: s.onHand, available, deficit: Math.max(0, p.reorderLevel - available) };
-      })
-      .filter(p => p.available <= p.reorderLevel)
-      .sort((a, b) => b.deficit - a.deficit);
+    return cached('stock:lowStockReport', 10, async () => {
+      const products = await Product.find({ status: 'active', reorderLevel: { $gt: 0 } }).lean();
+      const ids = products.map(p => p._id);
+      const levels = await StockLevel.aggregate([
+        { $match: { productId: { $in: ids } } },
+        { $group: { _id: '$productId', onHand: { $sum: '$onHand' }, reserved: { $sum: '$reserved' } } },
+      ]);
+      const byProduct = Object.fromEntries(levels.map(l => [l._id, l]));
+      return products
+        .map(p => {
+          const s = byProduct[p._id] || { onHand: 0, reserved: 0 };
+          const available = Math.max(0, s.onHand - s.reserved);
+          return { ...p, onHand: s.onHand, available, deficit: Math.max(0, p.reorderLevel - available) };
+        })
+        .filter(p => p.available <= p.reorderLevel)
+        .sort((a, b) => b.deficit - a.deficit);
+    });
   },
 
   async outOfStockReport() {
@@ -144,53 +151,58 @@ export const StockService = {
       .filter(p => p.available === 0);
   },
 
+  // Dashboard is the hottest uncached read (inventory dashboard page + AI tool).
+  // It runs 8 queries per request (~220ms cold). Cache the assembled result with
+  // a short TTL — dashboard/analytics use the same pattern; inventory mutations
+  // become visible within the TTL.
   async dashboard() {
-    const [
-      productCount, warehouseCount, totalValueAgg, byCategoryValue,
-      byWarehouseStock, recentMovements, lowStock, movementsToday,
-    ] = await Promise.all([
-      Product.countDocuments({ status: 'active' }),
-      Warehouse.countDocuments({ status: 'active' }),
-      // Inventory valuation = sum(onHand * unitCost) per product
-      StockLevel.aggregate([
-        { $lookup: { from: 'products', localField: 'productId', foreignField: '_id', as: 'p' } },
-        { $unwind: '$p' },
-        { $group: { _id: null, value: { $sum: { $multiply: ['$onHand', '$p.unitCost'] } }, onHand: { $sum: '$onHand' } } },
-      ]),
-      StockLevel.aggregate([
-        { $lookup: { from: 'products', localField: 'productId', foreignField: '_id', as: 'p' } },
-        { $unwind: '$p' },
-        { $group: { _id: '$p.category', value: { $sum: { $multiply: ['$onHand', '$p.unitCost'] } }, onHand: { $sum: '$onHand' } } },
-        { $sort: { value: -1 } },
-      ]),
-      StockLevel.aggregate([
-        { $lookup: { from: 'warehouses', localField: 'warehouseId', foreignField: '_id', as: 'w' } },
-        { $unwind: '$w' },
-        { $group: { _id: '$warehouseId', code: { $first: '$w.code' }, name: { $first: '$w.name' }, capacity: { $first: '$w.capacityUnits' }, onHand: { $sum: '$onHand' } } },
-        { $sort: { onHand: -1 } },
-      ]),
-      StockMovement.find().sort({ at: -1 }).limit(8).lean(),
-      this.lowStockReport(),
-      StockMovement.countDocuments({ at: { $gte: new Date(Date.now() - 24 * 3600 * 1000) } }),
-    ]);
-    const totalValue = totalValueAgg[0]?.value || 0;
-    const totalOnHand = totalValueAgg[0]?.onHand || 0;
-    const result = {
-      kpis: {
-        totalValue, totalOnHand,
-        productCount, warehouseCount,
-        lowStockCount: lowStock.length,
-        movementsToday,
-      },
-      byCategory: byCategoryValue.map(c => ({ name: c._id, value: c.value, onHand: c.onHand })),
-      byWarehouse: byWarehouseStock.map(w => ({
-        id: w._id, code: w.code, name: w.name, onHand: w.onHand, capacity: w.capacity,
-        utilization: w.capacity > 0 ? Math.min(100, Math.round((w.onHand / w.capacity) * 100)) : 0,
-      })),
-      recentMovements,
-      lowStock: lowStock.slice(0, 8),
-    };
-    console.log('STOCK DASHBOARD =', JSON.stringify({ kpis: result.kpis, byCategory: result.byCategory, byWarehouse: result.byWarehouse, lowStock: result.lowStock }, null, 2));
-    return result;
+    return cached('stock:dashboard', 10, async () => {
+      const [
+        productCount, warehouseCount, totalValueAgg, byCategoryValue,
+        byWarehouseStock, recentMovements, lowStock, movementsToday,
+      ] = await Promise.all([
+        Product.countDocuments({ status: 'active' }),
+        Warehouse.countDocuments({ status: 'active' }),
+        // Inventory valuation = sum(onHand * unitCost) per product
+        StockLevel.aggregate([
+          { $lookup: { from: 'products', localField: 'productId', foreignField: '_id', as: 'p' } },
+          { $unwind: '$p' },
+          { $group: { _id: null, value: { $sum: { $multiply: ['$onHand', '$p.unitCost'] } }, onHand: { $sum: '$onHand' } } },
+        ]),
+        StockLevel.aggregate([
+          { $lookup: { from: 'products', localField: 'productId', foreignField: '_id', as: 'p' } },
+          { $unwind: '$p' },
+          { $group: { _id: '$p.category', value: { $sum: { $multiply: ['$onHand', '$p.unitCost'] } }, onHand: { $sum: '$onHand' } } },
+          { $sort: { value: -1 } },
+        ]),
+        StockLevel.aggregate([
+          { $lookup: { from: 'warehouses', localField: 'warehouseId', foreignField: '_id', as: 'w' } },
+          { $unwind: '$w' },
+          { $group: { _id: '$warehouseId', code: { $first: '$w.code' }, name: { $first: '$w.name' }, capacity: { $first: '$w.capacityUnits' }, onHand: { $sum: '$onHand' } } },
+          { $sort: { onHand: -1 } },
+        ]),
+        StockMovement.find().sort({ at: -1 }).limit(8).lean(),
+        this.lowStockReport(),
+        StockMovement.countDocuments({ at: { $gte: new Date(Date.now() - 24 * 3600 * 1000) } }),
+      ]);
+      const totalValue = totalValueAgg[0]?.value || 0;
+      const totalOnHand = totalValueAgg[0]?.onHand || 0;
+      const result = {
+        kpis: {
+          totalValue, totalOnHand,
+          productCount, warehouseCount,
+          lowStockCount: lowStock.length,
+          movementsToday,
+        },
+        byCategory: byCategoryValue.map(c => ({ name: c._id, value: c.value, onHand: c.onHand })),
+        byWarehouse: byWarehouseStock.map(w => ({
+          id: w._id, code: w.code, name: w.name, onHand: w.onHand, capacity: w.capacity,
+          utilization: w.capacity > 0 ? Math.min(100, Math.round((w.onHand / w.capacity) * 100)) : 0,
+        })),
+        recentMovements,
+        lowStock: lowStock.slice(0, 8),
+      };
+      return result;
+    });
   },
 };

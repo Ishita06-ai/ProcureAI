@@ -1,0 +1,118 @@
+{
+  "ts": "2026-08-07T09:31:43.654Z",
+  "estimator": "chars/4 (matches project mock provider countTokens)",
+  "budgetChars": 6000,
+  "perQuery": [
+    {
+      "query": "inventory/low-stock",
+      "generalist": {
+        "charsBefore": 1097,
+        "charsAfter": 1097,
+        "tokensBefore": 275,
+        "tokensAfter": 275
+      },
+      "specialist": {
+        "charsBefore": 498,
+        "charsAfter": 498,
+        "tokensBefore": 125,
+        "tokensAfter": 125
+      }
+    },
+    {
+      "query": "inventory/summary",
+      "generalist": {
+        "charsBefore": 2515,
+        "charsAfter": 2515,
+        "tokensBefore": 629,
+        "tokensAfter": 629
+      },
+      "specialist": {
+        "charsBefore": 1916,
+        "charsAfter": 1916,
+        "tokensBefore": 479,
+        "tokensAfter": 479
+      }
+    },
+    {
+      "query": "analytics/summary",
+      "generalist": {
+        "charsBefore": 3813,
+        "charsAfter": 3813,
+        "tokensBefore": 954,
+        "tokensAfter": 954
+      },
+      "specialist": {
+        "charsBefore": 3214,
+        "charsAfter": 3214,
+        "tokensBefore": 804,
+        "tokensAfter": 804
+      }
+    },
+    {
+      "query": "analytics/spend-trend",
+      "generalist": {
+        "charsBefore": 1465,
+        "charsAfter": 1465,
+        "tokensBefore": 367,
+        "tokensAfter": 367
+      },
+      "specialist": {
+        "charsBefore": 866,
+        "charsAfter": 866,
+        "tokensBefore": 217,
+        "tokensAfter": 217
+      }
+    },
+    {
+      "query": "vendor/summary",
+      "generalist": {
+        "charsBefore": 6690,
+        "charsAfter": 6690,
+        "tokensBefore": 1673,
+        "tokensAfter": 1673
+      },
+      "specialist": {
+        "charsBefore": 7712,
+        "charsAfter": 6091,
+        "tokensBefore": 1928,
+        "tokensAfter": 1523
+      }
+    },
+    {
+      "query": "po/recent",
+      "generalist": {
+        "charsBefore": 6690,
+        "charsAfter": 6690,
+        "tokensBefore": 1673,
+        "tokensAfter": 1673
+      },
+      "specialist": {
+        "charsBefore": 6428,
+        "charsAfter": 6091,
+        "tokensBefore": 1607,
+        "tokensAfter": 1523
+      }
+    },
+    {
+      "query": "notification/unread",
+      "generalist": {
+        "charsBefore": 4343,
+        "charsAfter": 4343,
+        "tokensBefore": 1086,
+        "tokensAfter": 1086
+      },
+      "specialist": {
+        "charsBefore": 3744,
+        "charsAfter": 3744,
+        "tokensBefore": 936,
+        "tokensAfter": 936
+      }
+    }
+  ],
+  "totals": {
+    "generalistTokensBefore": 6657,
+    "generalistTokensAfter": 6657,
+    "specialistTokensBefore": 6096,
+    "specialistTokensAfter": 5607
+  }
+}

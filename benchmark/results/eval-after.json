@@ -1,0 +1,321 @@
+{
+  "ts": "2026-08-07T09:28:53.941Z",
+  "n": 20,
+  "results": [
+    {
+      "q": "Which products are low on stock?",
+      "expected": [
+        "inventory"
+      ],
+      "selected": [
+        "inventory"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "inventory-agent",
+      "specialistExpected": "inventory-agent",
+      "specialistOk": true
+    },
+    {
+      "q": "List all out-of-stock items",
+      "expected": [
+        "inventory"
+      ],
+      "selected": [
+        "inventory"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "inventory-agent",
+      "specialistExpected": "inventory-agent",
+      "specialistOk": true
+    },
+    {
+      "q": "How much did we spend last month?",
+      "expected": [
+        "analytics"
+      ],
+      "selected": [
+        "analytics"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "procurement-analyst",
+      "specialistExpected": "procurement-analyst",
+      "specialistOk": true
+    },
+    {
+      "q": "Show the monthly spend trend",
+      "expected": [
+        "analytics"
+      ],
+      "selected": [
+        "analytics"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "procurement-analyst",
+      "specialistExpected": "procurement-analyst",
+      "specialistOk": true
+    },
+    {
+      "q": "What is the spend by category?",
+      "expected": [
+        "analytics"
+      ],
+      "selected": [
+        "analytics"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "procurement-analyst",
+      "specialistExpected": "procurement-analyst",
+      "specialistOk": true
+    },
+    {
+      "q": "Break down spend by department",
+      "expected": [
+        "analytics"
+      ],
+      "selected": [
+        "analytics"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "procurement-analyst",
+      "specialistExpected": "procurement-analyst",
+      "specialistOk": true
+    },
+    {
+      "q": "Which vendors are high risk?",
+      "expected": [
+        "vendor"
+      ],
+      "selected": [
+        "vendor"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "vendor-risk-agent",
+      "specialistExpected": "vendor-risk-agent",
+      "specialistOk": true
+    },
+    {
+      "q": "Who are our top vendors by spend?",
+      "expected": [
+        "vendor"
+      ],
+      "selected": [
+        "vendor"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "vendor-risk-agent",
+      "specialistExpected": "vendor-risk-agent",
+      "specialistOk": true
+    },
+    {
+      "q": "Give me a vendor category breakdown",
+      "expected": [
+        "vendor"
+      ],
+      "selected": [
+        "vendor"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "vendor-risk-agent",
+      "specialistExpected": "vendor-risk-agent",
+      "specialistOk": true
+    },
+    {
+      "q": "Show pending purchase orders",
+      "expected": [
+        "po"
+      ],
+      "selected": [
+        "po"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "procurement-analyst",
+      "specialistExpected": "procurement-analyst",
+      "specialistOk": true
+    },
+    {
+      "q": "Any purchase orders in transit?",
+      "expected": [
+        "po"
+      ],
+      "selected": [
+        "po"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "procurement-analyst",
+      "specialistExpected": "procurement-analyst",
+      "specialistOk": true
+    },
+    {
+      "q": "What is the average cycle time for purchase requests?",
+      "expected": [
+        "analytics"
+      ],
+      "selected": [
+        "analytics"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "procurement-analyst",
+      "specialistExpected": "procurement-analyst",
+      "specialistOk": true
+    },
+    {
+      "q": "How long does approval usually take?",
+      "expected": [
+        "analytics"
+      ],
+      "selected": [
+        "analytics"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "procurement-analyst",
+      "specialistExpected": "procurement-analyst",
+      "specialistOk": true
+    },
+    {
+      "q": "Do I have unread notifications?",
+      "expected": [
+        "notification"
+      ],
+      "selected": [
+        "notification"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": null,
+      "specialistExpected": null,
+      "specialistOk": true
+    },
+    {
+      "q": "Summarize warehouse utilization",
+      "expected": [
+        "inventory"
+      ],
+      "selected": [
+        "inventory"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "inventory-agent",
+      "specialistExpected": "inventory-agent",
+      "specialistOk": true
+    },
+    {
+      "q": "Show recent stock movements",
+      "expected": [
+        "inventory"
+      ],
+      "selected": [
+        "inventory"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "inventory-agent",
+      "specialistExpected": "inventory-agent",
+      "specialistOk": true
+    },
+    {
+      "q": "Which products are about to run out and need reordering?",
+      "expected": [
+        "inventory"
+      ],
+      "selected": [
+        "inventory"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "inventory-agent",
+      "specialistExpected": "inventory-agent",
+      "specialistOk": true
+    },
+    {
+      "q": "Show my recent purchase orders",
+      "expected": [
+        "po"
+      ],
+      "selected": [
+        "po"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "procurement-analyst",
+      "specialistExpected": "procurement-analyst",
+      "specialistOk": true
+    },
+    {
+      "q": "What approvals are pending?",
+      "expected": [
+        "analytics"
+      ],
+      "selected": [
+        "analytics"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "procurement-analyst",
+      "specialistExpected": "procurement-analyst",
+      "specialistOk": true
+    },
+    {
+      "q": "How much inventory value is in the main warehouse?",
+      "expected": [
+        "inventory"
+      ],
+      "selected": [
+        "inventory"
+      ],
+      "extra": [],
+      "recall": true,
+      "exact": true,
+      "specialist": "inventory-agent",
+      "specialistExpected": "inventory-agent",
+      "specialistOk": true
+    }
+  ],
+  "totals": {
+    "recall": {
+      "hits": 20,
+      "pct": 100
+    },
+    "exact": {
+      "hits": 20,
+      "pct": 100
+    },
+    "specialist": {
+      "hits": 20,
+      "pct": 100
+    },
+    "wasteToolCalls": 0
+  }
+}

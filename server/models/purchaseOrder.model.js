@@ -47,4 +47,9 @@ const PurchaseOrderSchema = new mongoose.Schema({
   activityLog: [ActivitySchema],
 }, { timestamps: true, versionKey: false });
 
+// Hot read paths: status-filtered PO lists + spend-trend grouping by month,
+// and the CSV export sorted by createdAt. Compound + plain indexes serve both.
+PurchaseOrderSchema.index({ status: 1, createdAt: -1 });
+PurchaseOrderSchema.index({ createdAt: -1 });
+
 export const PurchaseOrder = mongoose.models.PurchaseOrder || mongoose.model('PurchaseOrder', PurchaseOrderSchema);
