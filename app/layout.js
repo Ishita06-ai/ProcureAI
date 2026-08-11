@@ -1,10 +1,16 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { Inter, Hanken_Grotesk } from 'next/font/google';
 import { Providers } from './providers';
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+});
+
+const hanken = Hanken_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-hanken',
   display: 'swap',
 });
 
@@ -15,7 +21,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${hanken.variable}`}>
       <body className="font-sans antialiased">
         <Providers>{children}</Providers>
       </body>

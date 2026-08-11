@@ -82,26 +82,30 @@ export function DashboardPage({ onNavigate }) {
     <div className="px-4 lg:px-8 py-6 lg:py-8 space-y-6">
       <AiInsightBanner onNavigate={onNavigate} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      {/* KPI cards */}
+      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {loading
-          ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[150px] rounded-2xl" />)
+          ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[176px] rounded-lg" />)
           : kpis.map((k, i) => <KpiCard key={k.key} item={k} index={i} />)
         }
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      {/* Charts */}
+      <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2"><SpendChart /></div>
         <CategoryDonut data={data?.distribution || []} loading={loading} />
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      {/* POs + activity */}
+      <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2"><PoTable data={data?.recentPOs || []} loading={loading} onNavigate={onNavigate} /></div>
         <ActivityFeed data={data?.activityFeed || []} loading={loading} />
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      {/* Vendor ranking */}
+      <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-1"><VendorRanking data={data?.topVendors || []} loading={loading} /></div>
-      </div>
+      </section>
     </div>
   );
 }

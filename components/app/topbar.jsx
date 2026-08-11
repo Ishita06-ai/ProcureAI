@@ -38,7 +38,7 @@ export function Topbar({ onOpenPalette, title, subtitle, onNavigate, onOpenMobil
   }, [user]);
 
   return (
-    <header className="sticky top-0 z-30 h-16 flex items-center gap-4 px-4 lg:px-8 border-b border-border/60 glass">
+    <header className="sticky top-0 z-30 h-16 flex items-center gap-4 px-4 lg:px-8 border-b border-border/80 bg-background/90 backdrop-blur-md">
       <Button
         onClick={onOpenMobileNav}
         size="icon"
@@ -50,7 +50,7 @@ export function Topbar({ onOpenPalette, title, subtitle, onNavigate, onOpenMobil
       </Button>
 
       <div className="min-w-0 flex-1">
-        <h1 className="text-sm font-medium truncate">{title}</h1>
+        <h1 className="font-heading text-lg font-semibold tracking-tight truncate">{title}</h1>
         {subtitle && <p className="text-xs text-muted-foreground truncate">{subtitle}</p>}
       </div>
 
@@ -58,13 +58,13 @@ export function Topbar({ onOpenPalette, title, subtitle, onNavigate, onOpenMobil
       <button
         onClick={onOpenPalette}
         className={cn(
-          'group hidden md:flex items-center gap-2 h-9 w-[320px] rounded-lg border border-border/60 bg-muted/40 px-3 text-sm text-muted-foreground hover:bg-muted/70 transition-colors'
+          'group hidden md:flex items-center gap-2 h-9 w-[320px] rounded-md border border-border/80 bg-card px-3 text-sm text-muted-foreground hover:bg-accent/50 hover:border-border transition-colors'
         )}
         aria-label="Open command palette"
       >
         <Search className="h-4 w-4" />
         <span className="flex-1 text-left">Search vendors, POs, insights…</span>
-        <kbd className="hidden lg:inline-flex items-center gap-1 rounded border border-border/70 bg-background/60 px-1.5 py-0.5 text-[10px] font-medium">
+        <kbd className="hidden lg:inline-flex items-center gap-1 rounded border border-border/80 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium">
           <CmdIcon className="h-3 w-3" />K
         </kbd>
       </button>
@@ -91,7 +91,7 @@ export function Topbar({ onOpenPalette, title, subtitle, onNavigate, onOpenMobil
         <DropdownMenuTrigger asChild>
           <Button size="icon" variant="ghost" aria-label="Notifications" className="relative">
             <Bell className="h-4 w-4" />
-            {unread > 0 && <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-rose-500 ring-2 ring-background" />}
+            {unread > 0 && <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-destructive ring-2 ring-background" />}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-80">

@@ -10,37 +10,37 @@ export function AiInsightBanner({ onNavigate }) {
   if (dismissed) return null;
   return (
     <AnimatePresence>
-      <motion.div
+      <motion.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-        className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-violet-500/10 via-fuchsia-500/5 to-transparent p-5 lg:p-6"
+        className="relative flex flex-col items-start justify-between gap-6 overflow-hidden rounded-lg border border-border/70 border-l-4 border-l-primary bg-card p-6 md:flex-row md:items-center"
       >
-        <div className="absolute -top-16 -right-10 h-48 w-48 rounded-full bg-violet-500/20 blur-3xl" />
-        <div className="absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-fuchsia-500/10 blur-3xl" />
-        <div className="relative flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 grid place-items-center shadow-glow">
-              <Sparkles className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <div className="text-xs uppercase tracking-wider text-primary/90 font-medium">Procurio AI · Daily brief</div>
-              <h3 className="text-base lg:text-lg font-semibold mt-0.5">
-                3 procurement actions ready for review.
-              </h3>
-            </div>
+        <div className="relative flex items-start gap-4">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-border/80 bg-muted/60 text-primary">
+            <Sparkles className="h-5 w-5" />
           </div>
-          <p className="text-sm text-muted-foreground lg:max-w-xl">
-            Consolidate logistics vendors, review upcoming renewals, and check inventory reorder points.
-          </p>
-          <div className="lg:ml-auto flex gap-2">
-            <Button variant="outline" size="sm" className="h-9" onClick={() => setDismissed(true)}>Dismiss</Button>
-            <Button size="sm" className="h-9 gap-1.5 bg-foreground text-background hover:bg-foreground/90" onClick={() => onNavigate?.('ai')}>
-              Review actions <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
+          <div>
+            <p className="mb-1.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Daily Insight Brief
+            </p>
+            <h3 className="font-heading text-base font-semibold text-foreground lg:text-lg">
+              3 procurement actions ready for review.
+            </h3>
+            <p className="mt-1 max-w-2xl text-[13px] text-muted-foreground">
+              Consolidate logistics vendors, review upcoming renewals, and check inventory reorder points.
+            </p>
           </div>
         </div>
-      </motion.div>
+        <div className="relative flex w-full shrink-0 items-center gap-3 md:w-auto">
+          <Button variant="outline" size="sm" className="h-9 w-full rounded-md border-border/80 md:w-auto" onClick={() => setDismissed(true)}>
+            Dismiss
+          </Button>
+          <Button size="sm" className="h-9 w-full gap-2 rounded-md bg-foreground text-background hover:bg-foreground/90 md:w-auto" onClick={() => onNavigate?.('ai')}>
+            Review actions <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      </motion.section>
     </AnimatePresence>
   );
 }

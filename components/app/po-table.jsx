@@ -57,10 +57,10 @@ function ChainChip({ po }) {
 
 export function PoTable({ data = [], loading = false, onNavigate }) {
   return (
-    <Card className="border-border/60">
+    <Card className="rounded-lg border-border/70 bg-card">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div>
-          <CardTitle className="text-base font-semibold">Recent purchase orders</CardTitle>
+          <CardTitle className="font-heading text-base font-semibold">Recent purchase orders</CardTitle>
           <p className="text-xs text-muted-foreground">Latest activity across your procurement pipeline.</p>
         </div>
         <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground" onClick={() => onNavigate?.('procurement')}>

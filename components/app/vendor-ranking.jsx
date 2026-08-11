@@ -13,9 +13,9 @@ function initials(name = '') {
 
 export function VendorRanking({ data = [], loading = false }) {
   return (
-    <Card className="border-border/60 h-full">
+    <Card className="h-full rounded-lg border-border/70 bg-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold">Top vendors by performance</CardTitle>
+        <CardTitle className="font-heading text-base font-semibold">Top vendors by performance</CardTitle>
         <p className="text-xs text-muted-foreground">Ranked by scorecard.</p>
       </CardHeader>
       <CardContent className="space-y-3">

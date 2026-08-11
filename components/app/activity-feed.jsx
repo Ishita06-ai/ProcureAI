@@ -27,9 +27,9 @@ function timeAgo(date) {
 
 export function ActivityFeed({ data = [], loading = false }) {
   return (
-    <Card className="border-border/60 h-full">
+    <Card className="h-full rounded-lg border-border/70 bg-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold">Activity</CardTitle>
+        <CardTitle className="font-heading text-base font-semibold">Activity</CardTitle>
         <p className="text-xs text-muted-foreground">Recent activity across your workspace.</p>
       </CardHeader>
       <CardContent>

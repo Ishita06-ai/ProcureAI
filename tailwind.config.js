@@ -16,6 +16,10 @@ module.exports = {
           '2xl': '1400px'
         }
       },
+      fontFamily: {
+        sans: ['var(--font-inter)', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        heading: ['var(--font-hanken)', 'var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif']
+      },
       extend: {
         colors: {
           border: 'hsl(var(--border))',
