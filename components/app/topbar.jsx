@@ -4,7 +4,7 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Search, Bell, Sun, Moon, Plus, Command as CmdIcon, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -120,8 +120,9 @@ export function Topbar({ onOpenPalette, title, subtitle, onNavigate, onOpenMobil
         <DropdownMenuTrigger asChild>
           <button className="flex items-center gap-2 rounded-full hover:bg-accent/60 p-0.5 pr-2.5 transition-colors" aria-label="User menu">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop&crop=faces" alt="Avatar" />
-              <AvatarFallback>{(user?.name || 'U').slice(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="bg-muted text-muted-foreground text-[10px] font-medium">
+                {(user?.name || 'U').slice(0, 2).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <div className="hidden md:block text-left">
               <div className="text-xs font-medium leading-tight">{user?.name || 'Guest'}</div>
