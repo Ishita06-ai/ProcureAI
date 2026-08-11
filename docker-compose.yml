@@ -39,7 +39,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
       AI_PROVIDER: ${AI_PROVIDER:-mock}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.6-flash}
       STORAGE_PROVIDER: ${STORAGE_PROVIDER:-mock}
       EMAIL_PROVIDER: ${EMAIL_PROVIDER:-mock}
       EMAIL_FROM: ${EMAIL_FROM:-Procurio <no-reply@procurio.app>}

@@ -1,5 +1,5 @@
 // GeminiProvider — wraps the official @google/genai SDK.
-// Free-tier compatible. Default model: gemini-2.5-flash (set via GEMINI_MODEL).
+// Free-tier compatible. Default model: gemini-3.6-flash (set via GEMINI_MODEL).
 import { GoogleGenAI } from '@google/genai';
 import { logger } from '../../utils/logger.js';
 import { retry } from '../../utils/retry.js';
@@ -19,7 +19,7 @@ export class GeminiProvider {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) throw new Error('GEMINI_API_KEY is not set');
     this.name = 'gemini';
-    this.model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    this.model = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
     this.client = new GoogleGenAI({ apiKey });
   }
 
