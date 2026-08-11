@@ -30,7 +30,7 @@ const META = {
 };
 
 function Shell() {
-  const [active, setActive] = useState('ai');
+  const [active, setActive] = useState('dashboard');
   const [collapsed, setCollapsed] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);

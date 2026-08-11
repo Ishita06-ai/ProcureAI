@@ -94,7 +94,33 @@ export function LoginPage() {
                 <h1 className="text-xl font-semibold tracking-tight">Sign in to your workspace</h1>
                 <p className="text-sm text-muted-foreground mt-1">Use your team credentials to continue.</p>
 
-                <form onSubmit={onLogin} className="mt-6 space-y-4">
+                {/* Demo showcase — one-click access for interviews/demos. Sample
+                    data only, no credentials shown, no account creation required. */}
+                <div className="mt-5 mb-4 border border-border/60 rounded-lg p-4">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Demo accounts</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Explore the platform instantly with sample data — no signup or credentials needed.
+                  </p>
+                  <div className="space-y-2">
+                    <Button variant="outline" type="button" disabled={demoLoading !== null} onClick={() => onDemo('admin')} data-testid={LOGIN.demoAdminButton} className="w-full h-10 justify-start gap-2">
+                      {demoLoading === 'admin' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4 text-primary" />}
+                      <span className="flex-1 text-left">Explore as Demo Admin</span>
+                      <span className="text-[10px] text-muted-foreground">full access</span>
+                    </Button>
+                    <Button variant="outline" type="button" disabled={demoLoading !== null} onClick={() => onDemo('buyer')} data-testid={LOGIN.demoBuyerButton} className="w-full h-10 justify-start gap-2">
+                      {demoLoading === 'buyer' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4 text-primary" />}
+                      <span className="flex-1 text-left">Explore as Demo Buyer</span>
+                      <span className="text-[10px] text-muted-foreground">buyer view</span>
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="border-t border-border/60" />
+
+                <form onSubmit={onLogin} className="mt-4 space-y-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="l-email">Work email</Label>
                     <Input id="l-email" type="email" autoComplete="email" placeholder="you@company.com" data-testid={LOGIN.emailInput} value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -141,30 +167,6 @@ export function LoginPage() {
                 </form>
               </>
             )}
-
-            {/* Demo showcase — one-click access for interviews/demos. Sample
-                data only, no credentials shown, no account creation required. */}
-            <div className="mt-6 border-t border-border/60 pt-5">
-              <div className="flex items-center gap-1.5 mb-1">
-                <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Demo accounts</span>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">
-                Explore the platform instantly with sample data — no signup or credentials needed.
-              </p>
-              <div className="space-y-2">
-                <Button variant="outline" type="button" disabled={demoLoading !== null} onClick={() => onDemo('admin')} data-testid={LOGIN.demoAdminButton} className="w-full h-10 justify-start gap-2">
-                  {demoLoading === 'admin' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4 text-primary" />}
-                  <span className="flex-1 text-left">Explore as Demo Admin</span>
-                  <span className="text-[10px] text-muted-foreground">full access</span>
-                </Button>
-                <Button variant="outline" type="button" disabled={demoLoading !== null} onClick={() => onDemo('buyer')} data-testid={LOGIN.demoBuyerButton} className="w-full h-10 justify-start gap-2">
-                  {demoLoading === 'buyer' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4 text-primary" />}
-                  <span className="flex-1 text-left">Explore as Demo Buyer</span>
-                  <span className="text-[10px] text-muted-foreground">buyer view</span>
-                </Button>
-              </div>
-            </div>
 
             <div className="mt-5 text-center text-sm text-muted-foreground">
               {mode === 'login' ? (
