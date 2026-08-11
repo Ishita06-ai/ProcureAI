@@ -123,25 +123,6 @@ export function AppSidebar({ active, onNavigate, collapsed, onToggle }) {
           })}
         </ul>
       </nav>
-
-      {/* Upgrade card */}
-      {!collapsed && (
-        <div className="p-3">
-          <div className="relative overflow-hidden rounded-lg border border-border/60 bg-card p-4">
-            <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-primary/10 blur-2xl" />
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span className="font-heading text-sm font-semibold text-foreground">Procurio Pro</span>
-            </div>
-            <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
-              Advanced contract intelligence and risk forecasting.
-            </p>
-            <Button size="sm" className="mt-3 w-full h-8 bg-foreground text-background hover:bg-foreground/90">
-              Upgrade plan
-            </Button>
-          </div>
-        </div>
-      )}
     </aside>
   );
 }
