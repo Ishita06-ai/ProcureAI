@@ -9,9 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, TrendingUp } from 'lucide-react';
+import { RefreshCw, TrendingUp, Clock, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import { toast } from 'sonner';
+import { fmtCurrency, fmtHours } from '@/lib/procurement-utils';
+import { cn } from '@/lib/utils';
 
 const COLORS = [
   'hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))',
@@ -83,6 +85,15 @@ export function AnalyticsPage() {
   const funnel = data?.funnel || [];
   const topVendors = data?.topVendors || [];
   const cycles = data?.cycles || [];
+  const sla = data?.poApprovalSla || null;
+
+  const slaTiles = [
+    { label: 'Pending approvals', value: sla ? String(sla.pendingApprovals) : '—', icon: Clock },
+    { label: 'Avg approval time', value: sla ? fmtHours(sla.averageApprovalHours) : '—', icon: TrendingUp },
+    { label: 'SLA breaches', value: sla ? String(sla.slaBreaches) : '—', icon: AlertTriangle, danger: true },
+    { label: 'Approved within SLA', value: sla ? String(sla.approvedWithinSla) : '—', icon: CheckCircle2 },
+    { label: 'Approval rate', value: sla ? `${Math.round((sla.approvalRate || 0) * 100)}%` : '—', icon: TrendingUp },
+  ];
 
   return (
     <div className="px-4 lg:px-8 py-6 lg:py-8 space-y-6">
@@ -110,7 +121,7 @@ export function AnalyticsPage() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
               <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
-              <YAxis tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} width={56} />
+              <YAxis tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} width={56} />
               <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'hsl(var(--border))' }} />
               <Legend iconType="circle" wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
               <Area type="monotone" dataKey="spend" name="Spend" stroke="hsl(var(--chart-1))" fill="url(#gAnalyticsSpend)" strokeWidth={2.5} />
@@ -140,7 +151,7 @@ export function AnalyticsPage() {
               <BarChart data={byDept} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                 <XAxis dataKey="department" tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} width={56} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} width={56} />
                 <Tooltip content={<ChartTooltip />} cursor={{ fill: 'hsl(var(--accent))' }} />
                 <Bar dataKey="spend" name="Spend" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -179,7 +190,7 @@ export function AnalyticsPage() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <Badge variant="secondary" className="text-[10px]">score {v.score ?? '—'}</Badge>
-                    <span className="text-sm font-medium tabular-nums">${(v.spend || 0).toLocaleString()}</span>
+                    <span className="text-sm font-medium tabular-nums">{fmtCurrency(v.spend)}</span>
                   </div>
                 </div>
               ))}
@@ -211,6 +222,60 @@ export function AnalyticsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* PO approval & SLA */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold tracking-tight">PO approval &amp; SLA</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Sequential PO approvals — pending stages, per-stage cycle times and 48-hour SLA health.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {slaTiles.map((t) => (
+            <Card key={t.label} className="border-border/60">
+              <CardContent className="p-4">
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-1.5">
+                  <t.icon className={cn('h-3.5 w-3.5', t.danger && 'text-rose-500')} /> {t.label}
+                </div>
+                <div className={cn('text-2xl font-semibold tracking-tight mt-1 tabular-nums', t.danger && (sla?.slaBreaches > 0 ? 'text-rose-500' : ''))}>
+                  {loading ? <Skeleton className="h-7 w-16" /> : t.value}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <Card className="border-border/60">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-rose-500" /> SLA breaches
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Pending approval stages past the 48-hour SLA</p>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {loading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />) :
+              !sla || !sla.breachedPois?.length ? (
+                <EmptyState label="No SLA breaches — all pending approvals within SLA" />
+              ) : sla.breachedPois.map((p) => (
+                <div key={p.number} className="flex items-center justify-between gap-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <AlertTriangle className="h-4 w-4 text-rose-500 shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium font-mono leading-tight">PO {p.number}</div>
+                      <div className="text-xs text-muted-foreground truncate">{p.vendorName}</div>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className="text-sm font-semibold tabular-nums leading-tight">{fmtCurrency(p.amount)}</div>
+                    <div className="text-xs text-rose-400">Waiting for {p.waitingFor} · {fmtHours(p.pendingHours)} pending</div>
+                  </div>
+                </div>
+              ))}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

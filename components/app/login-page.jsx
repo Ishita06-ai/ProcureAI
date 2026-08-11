@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Boxes, Loader2, ArrowRight, ShieldCheck, ShoppingCart } from 'lucide-react';
+import { Boxes, Loader2, ArrowRight, ShieldCheck, ShoppingCart, ClipboardCheck, Banknote, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,7 +29,7 @@ export function LoginPage() {
 
   const [loading, setLoading] = useState(false);
 
-  // One demo button at a time; null when idle. 'admin' | 'buyer' while pending.
+  // One demo button at a time; null when idle. Role while pending.
   const [demoLoading, setDemoLoading] = useState(null);
 
   const onDemo = async (role) => {
@@ -114,6 +114,21 @@ export function LoginPage() {
                       {demoLoading === 'buyer' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4 text-primary" />}
                       <span className="flex-1 text-left">Explore as Demo Buyer</span>
                       <span className="text-[10px] text-muted-foreground">buyer view</span>
+                    </Button>
+                    <Button variant="outline" type="button" disabled={demoLoading !== null} onClick={() => onDemo('manager')} data-testid={LOGIN.demoManagerButton} className="w-full h-10 justify-start gap-2">
+                      {demoLoading === 'manager' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ClipboardCheck className="h-4 w-4 text-primary" />}
+                      <span className="flex-1 text-left">Explore as Demo Manager</span>
+                      <span className="text-[10px] text-muted-foreground">approver</span>
+                    </Button>
+                    <Button variant="outline" type="button" disabled={demoLoading !== null} onClick={() => onDemo('finance')} data-testid={LOGIN.demoFinanceButton} className="w-full h-10 justify-start gap-2">
+                      {demoLoading === 'finance' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Banknote className="h-4 w-4 text-primary" />}
+                      <span className="flex-1 text-left">Explore as Demo Finance</span>
+                      <span className="text-[10px] text-muted-foreground">approver</span>
+                    </Button>
+                    <Button variant="outline" type="button" disabled={demoLoading !== null} onClick={() => onDemo('director')} data-testid={LOGIN.demoDirectorButton} className="w-full h-10 justify-start gap-2">
+                      {demoLoading === 'director' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Briefcase className="h-4 w-4 text-primary" />}
+                      <span className="flex-1 text-left">Explore as Demo Director</span>
+                      <span className="text-[10px] text-muted-foreground">final approval</span>
                     </Button>
                   </div>
                 </div>

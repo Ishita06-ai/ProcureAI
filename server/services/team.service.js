@@ -38,7 +38,7 @@ export const TeamService = {
     return { user: user.toObject(), tempPassword };
   },
   async updateRole(id, role) {
-    if (!['admin','manager','buyer','viewer'].includes(role)) throw badRequest('Invalid role');
+    if (!['admin','manager','finance','director','buyer','viewer'].includes(role)) throw badRequest('Invalid role');
     const u = await User.findByIdAndUpdate(id, { role }, { new: true }).lean();
     if (!u) throw notFound('User not found');
     return u;

@@ -25,6 +25,21 @@ const ActivitySchema = new mongoose.Schema({
   meta: mongoose.Schema.Types.Mixed,
 }, { _id: false });
 
+// Sequential amount-based approval step for a PO. Mirrors the PR approval
+// chain but scoped to the manager/finance/director routing and extended with
+// `startedAt` so SLA (48h default) can be measured per stage.
+const PoApprovalStepSchema = new mongoose.Schema({
+  level: { type: Number, required: true },
+  requiredRole: { type: String, enum: ['manager', 'finance', 'director'], required: true },
+  status: { type: String, enum: ['pending', 'approved', 'rejected', 'skipped'], default: 'pending' },
+  approverId: String,
+  approverName: String,
+  // When this stage entered the queue (SLA starts here).
+  startedAt: Date,
+  actedAt: Date,
+  comment: String,
+}, { _id: false });
+
 const PurchaseOrderSchema = new mongoose.Schema({
   _id: { type: String, default: () => randomUUID() },
   number: { type: String, required: true, unique: true, index: true },
@@ -34,10 +49,10 @@ const PurchaseOrderSchema = new mongoose.Schema({
   vendorName: { type: String, required: true },
   ownerId: { type: String, index: true },
   ownerName: { type: String },
-  status: { type: String, enum: ['Draft', 'Pending', 'Approved', 'In Transit', 'Delivered', 'Cancelled'], default: 'Pending', index: true },
+  status: { type: String, enum: ['Draft', 'Pending', 'Rejected', 'Approved', 'In Transit', 'Delivered', 'Cancelled'], default: 'Pending', index: true },
   deliveryStatus: { type: String, enum: ['NotShipped', 'Shipped', 'PartiallyReceived', 'Received'], default: 'NotShipped' },
   amount: { type: Number, default: 0 },
-  currency: { type: String, default: 'USD' },
+  currency: { type: String, default: 'INR' },
   eta: { type: String, default: '—' },
   expectedDate: Date,
   deliveredAt: Date,
@@ -45,6 +60,8 @@ const PurchaseOrderSchema = new mongoose.Schema({
   notes: String,
   comments: [CommentSchema],
   activityLog: [ActivitySchema],
+  approvalChain: [PoApprovalStepSchema],
+  currentLevel: { type: Number, default: 0 },
 }, { timestamps: true, versionKey: false });
 
 // Hot read paths: status-filtered PO lists + spend-trend grouping by month,

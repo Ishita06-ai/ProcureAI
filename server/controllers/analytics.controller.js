@@ -8,6 +8,7 @@ export const AnalyticsController = {
   spendByCategory:    asyncHandler(async (req, res) => res.json(ok(await AnalyticsService.spendByCategory()))),
   spendByDepartment:  asyncHandler(async (req, res) => res.json(ok(await AnalyticsService.spendByDepartment()))),
   approvalFunnel:     asyncHandler(async (req, res) => res.json(ok(await AnalyticsService.approvalFunnel()))),
+  approvalSla:        asyncHandler(async (req, res) => res.json(ok(await AnalyticsService.poApprovalSla()))),
   topVendors:         asyncHandler(async (req, res) => res.json(ok(await AnalyticsService.topVendorsBySpend()))),
   cycleTimes:         asyncHandler(async (req, res) => res.json(ok(await AnalyticsService.cycleTimes()))),
 };

@@ -29,6 +29,8 @@ import { toast } from 'sonner';
 const ROLE_STYLES = {
   admin:   'bg-violet-500/10 text-violet-500 border-violet-500/20',
   manager: 'bg-sky-500/10 text-sky-500 border-sky-500/20',
+  finance: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+  director:'bg-fuchsia-500/10 text-fuchsia-500 border-fuchsia-500/20',
   buyer:   'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
   viewer:  'bg-muted text-muted-foreground border-border',
 };
@@ -75,6 +77,8 @@ function InviteDialog({ onInvited }) {
               <SelectContent>
                 <SelectItem value="admin">Admin</SelectItem>
                 <SelectItem value="manager">Manager</SelectItem>
+                <SelectItem value="finance">Finance</SelectItem>
+                <SelectItem value="director">Director</SelectItem>
                 <SelectItem value="buyer">Buyer</SelectItem>
                 <SelectItem value="viewer">Viewer</SelectItem>
               </SelectContent>
@@ -180,7 +184,7 @@ function TeamTab() {
                         <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="h-4 w-4" /></Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        {['admin','manager','buyer','viewer'].filter(r => r !== m.role).map(r => (
+                        {['admin','manager','finance','director','buyer','viewer'].filter(r => r !== m.role).map(r => (
                           <DropdownMenuItem key={r} onClick={() => changeRole(m._id, r)}>Make {r}</DropdownMenuItem>
                         ))}
                         <DropdownMenuItem onClick={() => changeStatus(m._id, m.status === 'disabled' ? 'active' : 'disabled')}>

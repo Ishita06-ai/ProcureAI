@@ -14,7 +14,12 @@ r.get('/recent', PoController.recent);
 r.get('/:id', PoController.get);
 r.post('/', authMiddleware(), requireRole('admin','manager','buyer'), validate(createPoSchema), PoController.create);
 r.patch('/:id/status', authMiddleware(), requireRole('admin','manager'),
-  validate(z.object({ status: z.enum(['Draft','Pending','Approved','In Transit','Delivered','Cancelled']) })),
+  validate(z.object({ status: z.enum(['Draft','Pending','Rejected','Approved','In Transit','Delivered','Cancelled']) })),
   PoController.updateStatus);
+// Approval workflow — role is checked per-step in the service (manager/finance/
+// director/admin against the currently pending stage).
+const approvalActionSchema = z.object({ comment: z.string().max(500).optional() });
+r.post('/:id/approve', authMiddleware(), validate(approvalActionSchema), PoController.approve);
+r.post('/:id/reject', authMiddleware(), validate(approvalActionSchema), PoController.reject);
 r.post('/:id/comments', authMiddleware(), validate(commentSchema), PoController.addComment);
 export default r;

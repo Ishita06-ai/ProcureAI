@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
-  Search, LayoutGrid, List, RefreshCw, Download, ShoppingCart, ClipboardList, PackageCheck, ChevronDown, MoreHorizontal, Truck, CheckCircle2, XCircle,
+  Search, LayoutGrid, List, RefreshCw, Download, ShoppingCart, ClipboardList, PackageCheck, ChevronDown, MoreHorizontal, Truck, CheckCircle2, XCircle, Check, Clock, Circle, AlertTriangle,
 } from 'lucide-react';
 import { cn, hasRole } from '@/lib/utils';
 import { api } from '@/lib/api-client';
@@ -27,7 +27,8 @@ import { PrKanban } from '@/components/app/pr-kanban';
 import { PrTable } from '@/components/app/pr-table';
 import { PrDrawer } from '@/components/app/pr-drawer';
 import { PrCreateDialog } from '@/components/app/pr-create-dialog';
-import { PR_STATUS, PRIORITY, PO_STATUS, GRN_STATUS, fmtCurrency, fmtDate, fmtRelative } from '@/lib/procurement-utils';
+import { PoDrawer } from '@/components/app/po-drawer';
+import { PR_STATUS, PRIORITY, PO_STATUS, GRN_STATUS, fmtCurrency, fmtDate, fmtRelative, APPROVAL_ROLE_LABELS, canApprovePoStep } from '@/lib/procurement-utils';
 
 function useVendors() {
   const [vendors, setVendors] = useState([]);
@@ -137,6 +138,40 @@ function PurchaseRequestsTab() {
 }
 
 // ============ Purchase Orders Tab ============
+
+// Compact approval-stage display for the PO table: "Manager ✓ → Finance ⏳ → Director ○".
+function ApprovalChainChip({ po }) {
+  const chain = po?.approvalChain || [];
+  const currentLevel = po?.currentLevel || 1;
+  if (!chain.length) return <span className="text-xs text-muted-foreground">—</span>;
+  return (
+    <div className="flex items-center gap-1 flex-wrap">
+      {chain.map((step, i) => {
+        const isCurrent = i === currentLevel - 1;
+        const Icon = step.status === 'approved' ? Check : step.status === 'rejected' ? XCircle : isCurrent ? Clock : Circle;
+        const breached = isCurrent && step.sla?.breached;
+        const cls = step.status === 'approved' ? 'text-emerald-500'
+          : step.status === 'rejected' ? 'text-rose-500'
+          : isCurrent ? (breached ? 'text-rose-500' : 'text-amber-400')
+          : 'text-muted-foreground/50';
+        return (
+          <Fragment key={i}>
+            {i > 0 && <span className="text-[10px] text-muted-foreground/40">→</span>}
+            <span
+              className={cn('flex items-center gap-0.5 text-[11px]', cls)}
+              title={`${APPROVAL_ROLE_LABELS[step.requiredRole] || step.requiredRole}: ${step.status}${breached ? ' · SLA breached' : ''}`}
+            >
+              <Icon className="h-3 w-3" />
+              {APPROVAL_ROLE_LABELS[step.requiredRole] || step.requiredRole}
+              {breached && <AlertTriangle className="h-2.5 w-2.5" />}
+            </span>
+          </Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
 function PoTab() {
   const { user } = useAuth();
   const [q, setQ] = useState('');
@@ -144,6 +179,7 @@ function PoTab() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
+  const [openId, setOpenId] = useState(null);
 
   useEffect(() => {
     let cancel = false;
@@ -166,6 +202,16 @@ function PoTab() {
     try {
       await api.updatePOStatus(po._id, newStatus);
       toast.success(`PO ${po.number} → ${newStatus}`);
+      setRefresh(x => x + 1);
+    } catch (e) { toast.error(e.message); }
+  };
+
+  // Approval-workflow action on the currently pending stage.
+  const decide = async (po, action) => {
+    try {
+      if (action === 'approve') await api.approvePO(po._id, '');
+      else await api.rejectPO(po._id, '');
+      toast.success(`PO ${po.number} ${action === 'approve' ? 'approved at this stage' : 'rejected'}`);
       setRefresh(x => x + 1);
     } catch (e) { toast.error(e.message); }
   };
@@ -205,6 +251,7 @@ function PoTab() {
                 <TableHead className="text-[11px] uppercase tracking-wider">Vendor</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider">From PR</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider">Status</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider">Approval</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider">Delivery</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wider">Created</TableHead>
                 <TableHead className="text-right text-[11px] uppercase tracking-wider pr-6">Amount</TableHead>
@@ -226,12 +273,19 @@ function PoTab() {
               ))}
               {!loading && items.map((po) => {
                 const meta = PO_STATUS[po.status] || PO_STATUS.Pending;
+                const currentStep = po.approvalInfo?.currentStep || po.approvalChain?.[(po.currentLevel || 1) - 1];
+                const canAct = user && po.status === 'Pending' && currentStep && canApprovePoStep(user.role, currentStep);
                 return (
                   <TableRow key={po._id} className="border-border/60 hover:bg-accent/30">
-                    <TableCell className="pl-6 font-medium font-mono text-xs">{po.number}</TableCell>
+                    <TableCell className="pl-6">
+                      <button type="button" onClick={() => setOpenId(po._id)} className="font-medium font-mono text-xs hover:text-primary hover:underline text-left">
+                        {po.number}
+                      </button>
+                    </TableCell>
                     <TableCell className="text-sm">{po.vendorName}</TableCell>
                     <TableCell className="text-[11px] font-mono text-muted-foreground">{po.requestNumber || '—'}</TableCell>
                     <TableCell><Badge variant="outline" className={cn('h-5 text-[10px]', meta.cls)}>{po.status}</Badge></TableCell>
+                    <TableCell><ApprovalChainChip po={po} /></TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {po.deliveryStatus === 'Received' && <span className="text-emerald-500">Received</span>}
                       {po.deliveryStatus === 'Shipped' && <span className="text-sky-500">In transit · {po.eta}</span>}
@@ -241,18 +295,24 @@ function PoTab() {
                     <TableCell className="text-xs text-muted-foreground">{fmtRelative(po.createdAt)}</TableCell>
                     <TableCell className="text-right font-medium pr-6">{fmtCurrency(po.amount)}</TableCell>
                     <TableCell>
-                      {user && ['admin', 'manager'].includes(user.role) && (
+                      {user && ['admin', 'manager', 'finance', 'director'].includes(user.role) && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="h-4 w-4" /></Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Advance status</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            {po.status === 'Pending' && <DropdownMenuItem onClick={() => advance(po, 'Approved')}><CheckCircle2 className="h-3.5 w-3.5 mr-2" /> Approve</DropdownMenuItem>}
-                            {(po.status === 'Approved' || po.status === 'Pending') && <DropdownMenuItem onClick={() => advance(po, 'In Transit')}><Truck className="h-3.5 w-3.5 mr-2" /> Mark in transit</DropdownMenuItem>}
+                            {canAct ? (
+                              <>
+                                <DropdownMenuLabel>Approve {po.number}</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => decide(po, 'approve')}><CheckCircle2 className="h-3.5 w-3.5 mr-2 text-emerald-500" /> Approve stage</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => decide(po, 'reject')} className="text-destructive focus:text-destructive"><XCircle className="h-3.5 w-3.5 mr-2" /> Reject</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                              </>
+                            ) : null}
+                            {po.status === 'Approved' && <DropdownMenuItem onClick={() => advance(po, 'In Transit')}><Truck className="h-3.5 w-3.5 mr-2" /> Mark in transit</DropdownMenuItem>}
                             {po.status === 'In Transit' && <DropdownMenuItem onClick={() => advance(po, 'Delivered')}><PackageCheck className="h-3.5 w-3.5 mr-2" /> Mark delivered</DropdownMenuItem>}
-                            {!['Delivered', 'Cancelled'].includes(po.status) && (
+                            {!['Delivered', 'Cancelled', 'Rejected'].includes(po.status) && (
                               <>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => advance(po, 'Cancelled')} className="text-destructive focus:text-destructive">
@@ -268,12 +328,14 @@ function PoTab() {
                 );
               })}
               {!loading && items.length === 0 && (
-                <TableRow><TableCell colSpan={8} className="text-center py-12 text-sm text-muted-foreground">No purchase orders.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-12 text-sm text-muted-foreground">No purchase orders.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      <PoDrawer poId={openId} open={!!openId} onOpenChange={(o) => !o && setOpenId(null)} onMutated={() => setRefresh(x => x + 1)} />
     </div>
   );
 }

@@ -22,6 +22,16 @@ export const PoController = {
     await recordAudit({ req, action: 'po.statusChange', resource: 'po', resourceId: po._id, meta: { status: po.status } });
     res.json(ok(po));
   }),
+  approve: asyncHandler(async (req, res) => {
+    const po = await PoService.approve(req.params.id, { comment: req.body.comment }, req.user);
+    await recordAudit({ req, action: 'po.approve', resource: 'po', resourceId: po._id, meta: { status: po.status } });
+    res.json(ok(po));
+  }),
+  reject: asyncHandler(async (req, res) => {
+    const po = await PoService.reject(req.params.id, { comment: req.body.comment }, req.user);
+    await recordAudit({ req, action: 'po.reject', resource: 'po', resourceId: po._id, meta: { status: po.status } });
+    res.json(ok(po));
+  }),
   addComment: asyncHandler(async (req, res) => res.json(ok(await PoService.addComment(req.params.id, req.body.text, req.user)))),
   recent: asyncHandler(async (req, res) => res.json(ok(await PoService.recent(Number(req.query.limit) || 6)))),
 };

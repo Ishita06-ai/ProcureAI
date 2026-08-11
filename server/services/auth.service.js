@@ -13,6 +13,9 @@ import { conflict, unauthorized, notFound, badRequest } from '../utils/apiError.
 export const DEMO_ACCOUNTS = {
   admin: { email: 'demo.admin@procurio.app', name: 'Demo Admin', role: 'admin' },
   buyer: { email: 'demo.buyer@procurio.app', name: 'Demo Buyer', role: 'buyer' },
+  manager: { email: 'demo.manager@procurio.app', name: 'Demo Manager', role: 'manager' },
+  finance: { email: 'demo.finance@procurio.app', name: 'Demo Finance', role: 'finance' },
+  director: { email: 'demo.director@procurio.app', name: 'Demo Director', role: 'director' },
 };
 
 export const AuthService = {
@@ -42,10 +45,11 @@ export const AuthService = {
     return user;
   },
 
-  // One-click demo access. Accepts 'admin' | 'buyer' only — anything else is
-  // a 400. Returns the same { user, token } shape as login() so the frontend
-  // treats it identically. No scrypt verification (nothing to verify against),
-  // so it is cheap and safe to expose behind a rate limiter.
+  // One-click demo access. Accepts 'admin' | 'buyer' | 'manager' | 'finance' |
+  // 'director' — anything else is a 400. Returns the same { user, token }
+  // shape as login() so the frontend treats it identically. No scrypt
+  // verification (nothing to verify against), so it is cheap and safe to
+  // expose behind a rate limiter.
   async demoLogin(role) {
     const cfg = DEMO_ACCOUNTS[role];
     if (!cfg) throw badRequest(`Unknown demo account: ${role}`);

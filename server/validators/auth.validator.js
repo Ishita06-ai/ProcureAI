@@ -4,7 +4,7 @@ export const registerSchema = z.object({
   email: z.string().email(),
   name: z.string().min(2).max(80),
   password: z.string().min(8).max(120),
-  role: z.enum(['admin', 'manager', 'buyer', 'viewer']).optional(),
+  role: z.enum(['admin', 'manager', 'finance', 'director', 'buyer', 'viewer']).optional(),
 });
 
 export const loginSchema = z.object({
@@ -13,5 +13,5 @@ export const loginSchema = z.object({
 });
 
 export const demoLoginSchema = z.object({
-  role: z.enum(['admin', 'buyer']),
+  role: z.enum(['admin', 'buyer', 'manager', 'finance', 'director']),
 });

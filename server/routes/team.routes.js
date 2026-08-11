@@ -10,9 +10,9 @@ r.use(authMiddleware());
 r.get('/members', requireRole('admin','manager'), TeamController.list);
 r.post('/members',     requireRole('admin'), validate(z.object({
   email: z.string().email(), name: z.string().min(2),
-  role: z.enum(['admin','manager','buyer','viewer']).optional(),
+  role: z.enum(['admin','manager','finance','director','buyer','viewer']).optional(),
 })), TeamController.invite);
-r.patch('/members/:id/role',   requireRole('admin'), validate(z.object({ role: z.enum(['admin','manager','buyer','viewer']) })), TeamController.updateRole);
+r.patch('/members/:id/role',   requireRole('admin'), validate(z.object({ role: z.enum(['admin','manager','finance','director','buyer','viewer']) })), TeamController.updateRole);
 r.patch('/members/:id/status', requireRole('admin'), validate(z.object({ status: z.enum(['active','invited','disabled']) })), TeamController.setStatus);
 r.delete('/members/:id',       requireRole('admin'), TeamController.remove);
 r.get('/audit-log', requireRole('admin','manager'), TeamController.auditLog);

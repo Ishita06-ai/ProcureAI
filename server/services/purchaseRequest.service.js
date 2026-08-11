@@ -4,6 +4,7 @@ import { Vendor } from '../models/vendor.model.js';
 import { notFound, badRequest, forbidden } from '../utils/apiError.js';
 import { EmailNotify } from './emailNotify.service.js';
 import { User } from '../models/user.model.js';
+import { buildPoApprovalChain } from '../utils/approval.js';
 
 function nextPrNumber() { return `PR-${20000 + Math.floor(Math.random() * 80000)}`; }
 function nextPoNumber() { return `PO-${10000 + Math.floor(Math.random() * 90000)}`; }
@@ -296,6 +297,13 @@ export const PrService = {
       lineTotal: (it.qty || 0) * (it.estimatedUnitPrice || 0),
     }));
 
+    // Every PO enters the amount-based PO approval workflow — including POs
+    // converted from an approved PR. PR approval and PO approval are distinct
+    // controls; the PO starts Pending with its own sequential chain.
+    const amount = pr.selectedQuoteAmount || pr.estimatedTotal;
+    const approvalChain = buildPoApprovalChain(amount);
+    approvalChain[0].startedAt = new Date();
+
     const po = await PurchaseOrder.create({
       number: nextPoNumber(),
       requestId: pr._id,
@@ -304,11 +312,14 @@ export const PrService = {
       vendorName: pr.selectedVendorName,
       ownerId: actor?.id,
       ownerName: actor?.name,
-      status: 'Approved',
-      amount: pr.selectedQuoteAmount || pr.estimatedTotal,
+      status: 'Pending',
+      amount,
+      currency: 'INR',
       lines,
       notes: data.notes,
       expectedDate: data.expectedDate ? new Date(data.expectedDate) : undefined,
+      approvalChain,
+      currentLevel: 1,
       activityLog: [{ at: new Date(), actorId: actor?.id, actorName: actor?.name, action: 'po.createdFromPR', meta: { pr: pr.number } }],
     });
 
