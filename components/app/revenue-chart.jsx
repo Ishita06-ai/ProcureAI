@@ -47,45 +47,39 @@ export function SpendChart() {
   const visible = data.slice(-RANGE_MONTHS[range]);
 
   return (
-    <Card className="flex h-[400px] flex-col rounded-lg border-border/70 bg-card">
-      <CardHeader className="flex flex-row items-start justify-between gap-4 p-6 pb-4">
+    <Card className="flex h-[380px] flex-col rounded-md border-border/60 bg-card">
+      <CardHeader className="flex flex-row items-start justify-between gap-4 p-5 pb-3">
         <div>
-          <CardTitle className="font-heading text-base font-semibold">Spend Over Time</CardTitle>
-          <p className="text-[13px] text-muted-foreground mt-1">Purchase order spend overview</p>
+          <CardTitle className="font-heading text-sm font-semibold">Spend Over Time</CardTitle>
+          <p className="text-[12px] text-muted-foreground mt-0.5">Purchase order spend overview</p>
         </div>
         <div className="flex items-center gap-3">
           <Tabs value={range} onValueChange={setRange}>
-            <TabsList className="h-8 rounded-md bg-muted/70 p-1">
-              <TabsTrigger value="3m" className="h-6 rounded px-2.5 text-xs">3M</TabsTrigger>
-              <TabsTrigger value="6m" className="h-6 rounded px-2.5 text-xs">6M</TabsTrigger>
-              <TabsTrigger value="12m" className="h-6 rounded px-2.5 text-xs">12M</TabsTrigger>
+            <TabsList className="h-7 rounded bg-muted/60 p-0.5">
+              <TabsTrigger value="3m" className="h-6 rounded px-2 text-[11px]">3M</TabsTrigger>
+              <TabsTrigger value="6m" className="h-6 rounded px-2 text-[11px]">6M</TabsTrigger>
+              <TabsTrigger value="12m" className="h-6 rounded px-2 text-[11px]">12M</TabsTrigger>
             </TabsList>
           </Tabs>
           <Button
-            variant="outline" size="sm" className="h-8 gap-1.5 rounded-md border-border/80 bg-card text-foreground hover:bg-accent/50"
+            variant="outline" size="sm" className="h-7 gap-1.5 rounded border-border/70 bg-card text-foreground hover:bg-accent/40 text-[11px]"
             disabled={visible.length === 0}
             onClick={() => downloadCsv(`spend-trend-${range}.csv`, visible)}
           >
-            <Download className="h-3.5 w-3.5" /> Export
+            <Download className="h-3 w-3" /> Export
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="min-h-0 flex-1 p-6 pt-2">
+      <CardContent className="min-h-0 flex-1 p-5 pt-1">
         <div className="h-full">
-          {loading ? <Skeleton className="h-full w-full" /> : (
+          {loading ? <Skeleton className="h-full w-full rounded" /> : (
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={visible} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-                <defs>
-                  <linearGradient id="gSpend" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+              <AreaChart data={visible} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--border))" vertical={false} opacity={0.4} />
                 <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} width={56} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} width={48} />
                 <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--border))' }} />
-                <Area type="monotone" dataKey="spend" name="Spend" stroke="hsl(var(--chart-1))" fill="url(#gSpend)" strokeWidth={2} />
+                <Area type="monotone" dataKey="spend" name="Spend" stroke="hsl(var(--chart-1))" fill="transparent" strokeWidth={1.5} />
               </AreaChart>
             </ResponsiveContainer>
           )}

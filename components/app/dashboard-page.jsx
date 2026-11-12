@@ -79,13 +79,13 @@ export function DashboardPage({ onNavigate }) {
   const kpis = buildKpis(data);
 
   return (
-    <div className="px-4 lg:px-8 py-6 lg:py-8 space-y-6">
+    <div className="px-6 py-8 space-y-8">
       <AiInsightBanner onNavigate={onNavigate} />
 
       {/* KPI cards */}
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {loading
-          ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[176px] rounded-lg" />)
+          ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[160px] rounded-md" />)
           : kpis.map((k, i) => <KpiCard key={k.key} item={k} index={i} />)
         }
       </section>
