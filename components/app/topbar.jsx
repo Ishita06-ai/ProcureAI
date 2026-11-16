@@ -63,7 +63,7 @@ export function Topbar({ onOpenPalette, title, subtitle, onNavigate, onOpenMobil
         aria-label="Open command palette"
       >
         <Search className="h-4 w-4" />
-        <span className="flex-1 text-left">Search vendors, POs, insights…</span>
+        <span className="flex-1 text-left">Search vendors,POs, insights…</span>
         <kbd className="hidden lg:inline-flex items-center gap-1 rounded border border-border/80 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium">
           <CmdIcon className="h-3 w-3" />K
         </kbd>
